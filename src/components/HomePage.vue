@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="homePage">
     <h1>This is an HOME page</h1>
   </div>
 </template>
@@ -12,6 +12,6 @@ export default {
 
 <style scoped>
 .homePage {
-  margin-bottom: 40px;
+  margin-top: 10px;
 }
 </style>

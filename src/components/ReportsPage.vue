@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="reportsPage">
     <h1>This is an reports page</h1>
   </div>
 </template>
@@ -12,6 +12,6 @@ export default {
 
 <style scoped>
 .reportsPage {
-  margin-bottom: 40px;
+  margin-top: 10px;
 }
 </style>
