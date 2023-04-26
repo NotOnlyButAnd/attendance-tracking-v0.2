@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <GlobalHeader />
     <div>
       <b-button>Button</b-button>
       <b-button variant="danger">Button</b-button>
@@ -11,10 +12,13 @@
 
 <script>
 import { mapActions } from "vuex";
+import GlobalHeader from "./components/GlobalHeader.vue";
 
 export default {
   name: "App",
-  components: {},
+  components: {
+    GlobalHeader,
+  },
   mounted() {
     this.fetchMovies();
   },
@@ -31,6 +35,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /*margin-top: 60px;*/
 }
 </style>
