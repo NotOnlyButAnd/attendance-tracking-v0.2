@@ -1,17 +1,17 @@
 <template>
   <div>
-    <h1>This is an reports page</h1>
+    <h1>This is an HOME page</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: "ReportsPage",
+  name: "HomePage",
 };
 </script>
 
 <style scoped>
-.reportsPage {
+.homePage {
   margin-bottom: 40px;
 }
 </style>

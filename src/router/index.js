@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
-import App from "./App.vue";
+import HomePage from "../components/HomePage";
+import ReportsPage from "../components/ReportsPage";
+import ProfilePage from "../components/ProfilePage";
 
 Vue.use(Router);
 
@@ -10,8 +12,18 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      name: "root",
-      component: App,
+      name: "home",
+      component: HomePage,
+    },
+    {
+      path: "/reports",
+      name: "reports",
+      component: ReportsPage,
+    },
+    {
+      path: "/profile",
+      name: "profile",
+      component: ProfilePage,
     },
   ],
 });
