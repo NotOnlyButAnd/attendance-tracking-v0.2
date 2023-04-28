@@ -3,6 +3,7 @@ import Router from "vue-router";
 import HomePage from "../components/HomePage";
 import ReportsPage from "../components/ReportsPage";
 import ProfilePage from "../components/ProfilePage";
+import SigninPage from "../components/SigninPage";
 
 Vue.use(Router);
 
@@ -24,6 +25,11 @@ const router = new Router({
       path: "/profile",
       name: "profile",
       component: ProfilePage,
+    },
+    {
+      path: "/signin",
+      name: "signin",
+      component: SigninPage,
     },
   ],
 });

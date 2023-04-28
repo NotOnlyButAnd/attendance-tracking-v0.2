@@ -10,6 +10,7 @@
           <b-navbar-nav>
             <b-nav-item href="/">Главная</b-nav-item>
             <b-nav-item href="/reports">Отчеты</b-nav-item>
+            <b-nav-item href="/signin">Авторизация</b-nav-item>
             <!-- <router-link to="/reports">Отчеты</router-link> -->
           </b-navbar-nav>
 
@@ -26,7 +27,9 @@
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
-      <router-view></router-view>
+      <div class="container-fluid my-5">
+        <router-view></router-view>
+      </div>
     </div>
   </div>
 </template>
