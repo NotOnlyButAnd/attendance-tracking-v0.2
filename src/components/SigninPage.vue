@@ -15,13 +15,14 @@
         <label for="password" class="mb-2">Пароль:</label>
         <b-input
           v-model="password"
-          type="text"
+          type="password"
           id="password"
           placeholder="Пароль..."
           class="mb-2"
         ></b-input>
       </div>
-      <b-button variant="primary">Войти</b-button>
+      <div v-if="isErrAuthorized" class="errMsg">Неверный логин\пароль!</div>
+      <b-button type="submit" variant="primary">Войти</b-button>
     </b-form>
   </div>
 </template>
@@ -33,29 +34,43 @@ export default {
     return {
       username: "",
       password: "",
+      isErrAuthorized: false,
     };
   },
   methods: {
     login(event) {
+      console.log("Clicked on 'Войти'", this.username, this.password);
+
       event.preventDefault();
 
       // логика авторизации
       this.axios
-        .post(`http://localhost:7000/api/auth/token/`, {
+        .post(`http://127.0.0.1:7000/api/token/`, {
           username: this.username,
           password: this.password,
         })
         .then((response) => {
-          this.setLogined(response.data.token);
+          console.log("response:", response);
+          this.setLogined(response.data.access);
         })
         .catch((err) => {
+          err.response.status === 401
+            ? (this.isErrAuthorized = true)
+            : (this.isErrAuthorized = false);
           console.log(err);
         });
     },
     setLogined(token) {
       // сохраняем токен
       console.log(token);
+      localStorage.setItem("token", token);
     },
   },
 };
 </script>
+
+<style>
+.errMsg {
+  color: red;
+}
+</style>
