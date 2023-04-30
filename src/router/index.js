@@ -4,6 +4,9 @@ import HomePage from "../components/HomePage";
 import ReportsPage from "../components/ReportsPage";
 import ProfilePage from "../components/ProfilePage";
 import SigninPage from "../components/SigninPage";
+import LoggedOutPage from "../components/LoggedOutPage";
+import ProtectedPage from "../components/ProtectedPage";
+import store from "../store/index.js";
 
 Vue.use(Router);
 
@@ -31,7 +34,29 @@ const router = new Router({
       name: "signin",
       component: SigninPage,
     },
+    {
+      path: "/loggedout",
+      name: "loggedout",
+      component: LoggedOutPage,
+    },
+    {
+      path: "/protected",
+      name: "protected",
+      component: ProtectedPage,
+    },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (store.getters.isLoggedIn) {
+      next();
+      return;
+    }
+    next("/login");
+  } else {
+    next();
+  }
 });
 
 export default router;

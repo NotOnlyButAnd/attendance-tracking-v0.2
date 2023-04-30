@@ -10,7 +10,7 @@
           <b-navbar-nav>
             <b-nav-item href="/">Главная</b-nav-item>
             <b-nav-item href="/reports">Отчеты</b-nav-item>
-            <b-nav-item href="/signin">Авторизация</b-nav-item>
+            <!-- <b-nav-item href="/signin">Авторизация</b-nav-item> -->
             <!-- <router-link to="/reports">Отчеты</router-link> -->
           </b-navbar-nav>
 
@@ -19,10 +19,15 @@
             <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
               <template #button-content>
-                <em>{{ username || "Пользователь" }}</em>
+                <em>{{ getUsername || "Пользователь" }}</em>
               </template>
-              <b-dropdown-item href="/profile">Профиль</b-dropdown-item>
-              <b-dropdown-item href="#">Выйти</b-dropdown-item>
+              <span v-if="isLoggedIn">
+                <b-dropdown-item href="/profile">Профиль</b-dropdown-item>
+                <b-dropdown-item @click="logout">Выйти</b-dropdown-item>
+              </span>
+              <span v-else>
+                <b-dropdown-item href="/signin">Авторизация</b-dropdown-item>
+              </span>
             </b-nav-item-dropdown>
           </b-navbar-nav>
         </b-collapse>
@@ -36,12 +41,13 @@
 
 <script>
 import { mapActions } from "vuex";
+//import authStore from "./store/index";
 
 export default {
   name: "App",
   data() {
     return {
-      username: localStorage.username,
+      username: localStorage.username || "",
     };
   },
   mounted() {
@@ -49,6 +55,57 @@ export default {
   },
   methods: {
     ...mapActions("movies", ["fetchMovies"]),
+    logout: function () {
+      this.$store.dispatch("logout").then(() => {
+        this.$router.push("/loggedout");
+      });
+    },
+  },
+  computed: {
+    isLoggedIn: function () {
+      return this.$store.getters.isLoggedIn;
+    },
+    // getUsername: function () {
+    //   // let un = this.$store.getters.username;
+    //   // console.log("Current username:", un);
+    //   // if (un) {
+    //   //   if (un.length == 0) {
+    //   //     return NaN;
+    //   //   } else {
+    //   //     return un;
+    //   //   }
+    //   // } else {
+    //   //   return NaN;
+    //   // }
+    //   //return authStore.state.username;
+    // },
+    getUsername() {
+      // console.log(
+      //   "COMPUTED username:",
+      //   this.$store.state.username || localStorage.username
+      // );
+      // костыльно, но если есть возможность - разберись с computed
+      return this.$store.state.username || localStorage.username;
+      //return localStorage.username;
+    },
+  },
+  // watch: {
+  //   // eslint-disable-next-line prettier/prettier
+  //   'authStore.state.username'() {
+  //     //this.username = authStore.state.username;
+  //     console.log(authStore.state.username);
+  //   },
+  // },
+  created: function () {
+    this.$http.interceptors.response.use(undefined, function (err) {
+      // eslint-disable-next-line no-unused-vars
+      return new Promise(function (resolve, reject) {
+        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          this.$store.dispatch("logout");
+        }
+        throw err;
+      });
+    });
   },
 };
 </script>

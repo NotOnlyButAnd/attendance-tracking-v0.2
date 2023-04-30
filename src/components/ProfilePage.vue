@@ -1,6 +1,6 @@
 <template>
   <div class="profilePage">
-    <h1>This is an profile page</h1>
+    <h1>This is an PROFILE page</h1>
   </div>
 </template>
 
