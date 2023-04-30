@@ -24,6 +24,9 @@
       <div v-if="isErrAuthorized" class="errMsg">Неверный логин\пароль!</div>
       <b-button type="submit" variant="primary">Войти</b-button>
     </b-form>
+    <!-- <b-button variant="outline-primary" @click="printToken">
+      Токен (хранилище)
+    </b-button> -->
   </div>
 </template>
 
@@ -52,6 +55,7 @@ export default {
         .then((response) => {
           console.log("response:", response);
           this.setLogined(response.data.access);
+          this.$router.push("/");
         })
         .catch((err) => {
           err.response.status === 401
@@ -64,6 +68,10 @@ export default {
       // сохраняем токен
       console.log(token);
       localStorage.setItem("token", token);
+      localStorage.setItem("username", this.username);
+    },
+    printToken() {
+      console.log(localStorage.token);
     },
   },
 };

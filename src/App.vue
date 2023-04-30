@@ -19,7 +19,7 @@
             <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
               <template #button-content>
-                <em>Пользователь</em>
+                <em>{{ username || "Пользователь" }}</em>
               </template>
               <b-dropdown-item href="/profile">Профиль</b-dropdown-item>
               <b-dropdown-item href="#">Выйти</b-dropdown-item>
@@ -39,6 +39,11 @@ import { mapActions } from "vuex";
 
 export default {
   name: "App",
+  data() {
+    return {
+      username: localStorage.username,
+    };
+  },
   mounted() {
     this.fetchMovies();
   },
