@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import movies from "./modules/movies";
+import students from "./modules/students";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -99,5 +100,6 @@ export default new Vuex.Store({
   },
   modules: {
     movies,
+    students,
   },
 });

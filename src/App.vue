@@ -52,9 +52,11 @@ export default {
   },
   mounted() {
     this.fetchMovies();
+    this.fetchAllStudents();
   },
   methods: {
     ...mapActions("movies", ["fetchMovies"]),
+    ...mapActions("students", ["fetchAllStudents"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");
@@ -78,60 +80,14 @@ export default {
     isLoggedIn: function () {
       return this.$store.getters.isLoggedIn;
     },
-    // getUsername: function () {
-    //   // let un = this.$store.getters.username;
-    //   // console.log("Current username:", un);
-    //   // if (un) {
-    //   //   if (un.length == 0) {
-    //   //     return NaN;
-    //   //   } else {
-    //   //     return un;
-    //   //   }
-    //   // } else {
-    //   //   return NaN;
-    //   // }
-    //   //return authStore.state.username;
-    // },
     getUsername() {
-      // console.log(
-      //   "COMPUTED username:",
-      //   this.$store.state.username || localStorage.username
-      // );
       // костыльно, но если есть возможность - разберись с computed
       return this.$store.state.username || localStorage.username;
-      //return localStorage.username;
     },
   },
-  // watch: {
-  //   // eslint-disable-next-line prettier/prettier
-  //   'authStore.state.username'() {
-  //     //this.username = authStore.state.username;
-  //     console.log(authStore.state.username);
-  //   },
-  // },
   created: function () {
     //console.log("CREATED!");
     this.checkAuthenticated();
-    // this.$http.interceptors.response.use(
-    //   function (response) {
-    //     console.log("Перехваченный ответ:", response);
-    //   },
-    //   function (eror) {
-    //     console.log("Перехваченная ошибка:", eror);
-    //     // eslint-disable-next-line no-unused-vars
-    //     // return new Promise(function (resolve, reject) {
-    //     //   console.log("PROMISE!");
-    //     //   if (
-    //     //     (err.status === 401 || err.status === 403) &&
-    //     //     err.config &&
-    //     //     !err.config.__isRetryRequest
-    //     //   ) {
-    //     //     this.$store.dispatch("logout");
-    //     //   }
-    //     //   throw err;
-    //     // });
-    //   }
-    // );
   },
 };
 </script>
