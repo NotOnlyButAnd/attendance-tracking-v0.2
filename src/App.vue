@@ -7,7 +7,7 @@
         <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
         <b-collapse id="nav-collapse" is-nav>
-          <b-navbar-nav>
+          <b-navbar-nav v-if="isLoggedIn">
             <b-nav-item href="/">Главная</b-nav-item>
             <b-nav-item href="/reports">Отчеты</b-nav-item>
             <!-- <b-nav-item href="/signin">Авторизация</b-nav-item> -->
@@ -57,8 +57,21 @@ export default {
     ...mapActions("movies", ["fetchMovies"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
-        this.$router.push("/loggedout");
+        this.$router.push("/signin");
       });
+    },
+    checkAuthenticated: function () {
+      console.log("checking auth....");
+      this.$store
+        .dispatch("isAuthenticated")
+        .then(() => {
+          console.log("athenticated");
+        })
+        .catch((err) => {
+          console.log("NOT athenticated");
+          this.logout();
+          console.log(err);
+        });
     },
   },
   computed: {
@@ -97,15 +110,28 @@ export default {
   //   },
   // },
   created: function () {
-    this.$http.interceptors.response.use(undefined, function (err) {
-      // eslint-disable-next-line no-unused-vars
-      return new Promise(function (resolve, reject) {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch("logout");
-        }
-        throw err;
-      });
-    });
+    //console.log("CREATED!");
+    this.checkAuthenticated();
+    // this.$http.interceptors.response.use(
+    //   function (response) {
+    //     console.log("Перехваченный ответ:", response);
+    //   },
+    //   function (eror) {
+    //     console.log("Перехваченная ошибка:", eror);
+    //     // eslint-disable-next-line no-unused-vars
+    //     // return new Promise(function (resolve, reject) {
+    //     //   console.log("PROMISE!");
+    //     //   if (
+    //     //     (err.status === 401 || err.status === 403) &&
+    //     //     err.config &&
+    //     //     !err.config.__isRetryRequest
+    //     //   ) {
+    //     //     this.$store.dispatch("logout");
+    //     //   }
+    //     //   throw err;
+    //     // });
+    //   }
+    // );
   },
 };
 </script>

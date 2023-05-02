@@ -10,6 +10,7 @@ export default new Vuex.Store({
     status: "",
     token: localStorage.getItem("token") || "",
     username: localStorage.getItem("username") || "",
+    isTeacher: false,
   },
   getters: {
     //auth
@@ -17,6 +18,7 @@ export default new Vuex.Store({
     authStatus: (state) => state.status,
     username: (state) => state.username,
     //auth end
+    isTeacher: (state) => state.isTeacher,
   },
   mutations: {
     //auth
@@ -67,6 +69,7 @@ export default new Vuex.Store({
       });
     },
     logout({ commit }) {
+      console.log("LOGOUT...");
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
         commit("logout");
@@ -74,6 +77,22 @@ export default new Vuex.Store({
         localStorage.removeItem("username");
         delete axios.defaults.headers.common["Authorization"];
         resolve();
+      });
+    },
+    isAuthenticated() {
+      // eslint-disable-next-line no-unused-vars
+      return new Promise((resolve, reject) => {
+        axios({
+          url: "http://localhost:7000/api/dummy/",
+          method: "GET",
+        })
+          .then((response) => {
+            //console.log("RESPONSE (isAuthenticated):", response);
+            resolve(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
       });
     },
     //auth end
