@@ -53,10 +53,12 @@ export default {
   mounted() {
     this.fetchMovies();
     this.fetchAllStudents();
+    this.fetchAllTeachers();
   },
   methods: {
     ...mapActions("movies", ["fetchMovies"]),
     ...mapActions("students", ["fetchAllStudents"]),
+    ...mapActions("teachers", ["fetchAllTeachers"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");

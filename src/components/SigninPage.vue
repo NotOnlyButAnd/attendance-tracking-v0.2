@@ -1,5 +1,5 @@
 <template>
-  <div class="w-25 mx-auto border p-3 rounded">
+  <div class="w-50 mx-auto border p-3 rounded">
     <b-form @submit.prevent="login">
       <div class="form-group">
         <label for="username" class="mb-2">Логин:</label>

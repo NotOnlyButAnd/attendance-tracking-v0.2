@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import movies from "./modules/movies";
 import students from "./modules/students";
+import teachers from "./modules/teachers";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -47,7 +48,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit("auth_request");
         axios({
-          url: "http://localhost:7000/api/token/",
+          url: "http://192.168.0.108:7000/api/token/",
           data: user,
           method: "POST",
         })
@@ -84,7 +85,7 @@ export default new Vuex.Store({
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
         axios({
-          url: "http://localhost:7000/api/dummy/",
+          url: "http://192.168.0.108:7000/api/dummy/",
           method: "GET",
         })
           .then((response) => {
@@ -101,5 +102,6 @@ export default new Vuex.Store({
   modules: {
     movies,
     students,
+    teachers,
   },
 });

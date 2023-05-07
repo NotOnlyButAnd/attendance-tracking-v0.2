@@ -1,38 +1,39 @@
 <template>
-  <div class="profilePage w-25 mx-auto border p-3 rounded">
+  <div class="profilePage w-75 mx-auto border p-3 rounded">
     <h1>Профиль</h1>
-    <div>Логин: {{ username }}</div>
+    <div class="profileRow">Логин: {{ username }}</div>
     <div v-if="username[0] === 's'">
+      <div class="profileRow">
+        ФИО:
+        {{
+          getStudentByID(username).user.last_name +
+          " " +
+          getStudentByID(username).user.first_name +
+          " " +
+          getStudentByID(username).middleName
+        }}
+      </div>
+      <div class="profileRow">Курс: {{ getStudentByID(username).course }}</div>
+      <div class="profileRow">Группа: {{ getStudentByID(username).group }}</div>
+      <div v-if="getStudentByID(username).isFreeVisit" class="succ profileRow">
+        Есть свободное посещение!
+      </div>
+      <div v-else class="err profileRow">НЕТ свободного посещения!</div>
+    </div>
+    <div class="profileRow" v-if="username[0] === 't'">
       <div>
         ФИО:
         {{
-          getStudentByID(username).user.last_name +
+          getTeacherByID(username).user.last_name +
           " " +
-          getStudentByID(username).user.first_name +
+          getTeacherByID(username).user.first_name +
           " " +
-          getStudentByID(username).middleName
+          getTeacherByID(username).middleName
         }}
       </div>
-      <div>Курс: {{ getStudentByID(username).course }}</div>
-      <div>Группа: {{ getStudentByID(username).group }}</div>
-      <div v-if="getStudentByID(username).isFreeVisit" class="succ">
-        Есть свободное посещение!
+      <div class="profileRow">
+        Кафедра: {{ getTeacherByID(username).department }}
       </div>
-      <div v-else class="err">НЕТ свободного посещения!</div>
-    </div>
-    <div v-if="username[0] === 't'">
-      PROFILE OF TEACHER PAGE
-      <!-- <div>
-        ФИО:
-        {{
-          getStudentByID(username).user.last_name +
-          " " +
-          getStudentByID(username).user.first_name +
-          " " +
-          getStudentByID(username).middleName
-        }}
-      </div>
-      <div>Кафедра: {{ getStudentByID(username).department }}</div> -->
     </div>
   </div>
 </template>
@@ -44,6 +45,7 @@ export default {
   name: "ProfilePage",
   computed: {
     ...mapGetters("students", ["students", "getStudentByID"]),
+    ...mapGetters("teachers", ["teachers", "getTeacherByID"]),
     //...mapGetters("students", []),
     // students: function () {
     //   //console.log(this.$store.modules.students.getters.students);
@@ -68,5 +70,8 @@ export default {
 }
 .succ {
   color: green;
+}
+.profileRow {
+  margin-top: 15px;
 }
 </style>
