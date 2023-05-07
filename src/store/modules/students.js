@@ -17,6 +17,10 @@ const studentsStore = {
   },
   getters: {
     students: (state) => state.students,
+    getStudentByID: (state) => (id) => {
+      //return state.students.find((student) => student.id === id);
+      return state.students[id];
+    },
   },
   mutations: {
     [STUDENTS](state, value) {

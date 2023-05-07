@@ -1,15 +1,38 @@
 <template>
-  <div class="profilePage">
-    <h1>This is an PROFILE page</h1>
-    <div class="oneStudent" v-for="(student, key) in students" :key="key">
-      <!-- {{ student }} -->
-      {{
-        student.user.last_name +
-        " " +
-        student.user.first_name +
-        " " +
-        student.middleName
-      }}
+  <div class="profilePage w-25 mx-auto border p-3 rounded">
+    <h1>Профиль</h1>
+    <div>Логин: {{ username }}</div>
+    <div v-if="username[0] === 's'">
+      <div>
+        ФИО:
+        {{
+          getStudentByID(username).user.last_name +
+          " " +
+          getStudentByID(username).user.first_name +
+          " " +
+          getStudentByID(username).middleName
+        }}
+      </div>
+      <div>Курс: {{ getStudentByID(username).course }}</div>
+      <div>Группа: {{ getStudentByID(username).group }}</div>
+      <div v-if="getStudentByID(username).isFreeVisit" class="succ">
+        Есть свободное посещение!
+      </div>
+      <div v-else class="err">НЕТ свободного посещения!</div>
+    </div>
+    <div v-if="username[0] === 't'">
+      PROFILE OF TEACHER PAGE
+      <!-- <div>
+        ФИО:
+        {{
+          getStudentByID(username).user.last_name +
+          " " +
+          getStudentByID(username).user.first_name +
+          " " +
+          getStudentByID(username).middleName
+        }}
+      </div>
+      <div>Кафедра: {{ getStudentByID(username).department }}</div> -->
     </div>
   </div>
 </template>
@@ -20,11 +43,15 @@ import { mapGetters } from "vuex";
 export default {
   name: "ProfilePage",
   computed: {
-    ...mapGetters("students", ["students"]),
+    ...mapGetters("students", ["students", "getStudentByID"]),
+    //...mapGetters("students", []),
     // students: function () {
     //   //console.log(this.$store.modules.students.getters.students);
     //   return this.$store.getters.students;
     // },
+  },
+  props: {
+    username: String,
   },
 };
 </script>
@@ -35,5 +62,11 @@ export default {
 }
 .oneStudent {
   margin-top: 10px;
+}
+.err {
+  color: red;
+}
+.succ {
+  color: green;
 }
 </style>

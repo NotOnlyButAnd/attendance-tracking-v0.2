@@ -1,5 +1,5 @@
 <template>
   <div>
-    <h1>You were LOGGED OUT!</h1>
+    <h1>Вы вышли из системы!</h1>
   </div>
 </template>

@@ -33,7 +33,7 @@
         </b-collapse>
       </b-navbar>
       <div class="container-fluid my-5">
-        <router-view></router-view>
+        <router-view :username="username"></router-view>
       </div>
     </div>
   </div>
