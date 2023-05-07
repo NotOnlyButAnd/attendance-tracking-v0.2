@@ -50,7 +50,7 @@ const moviesStore = {
         // });
         //console.log(response);
         const movies = serializeResponse(response);
-        console.log(movies);
+        //console.log(movies);
         commit(MOVIES, movies);
       } catch (err) {
         console.log(err);

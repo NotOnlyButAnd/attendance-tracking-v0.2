@@ -38,9 +38,9 @@ const studentsStore = {
           method: "GET",
         })
           .then((response) => {
-            console.log("RESPONSE:", response.data);
+            //console.log("RESPONSE:", response.data);
             const students = serializeResponse(response.data);
-            console.log(students);
+            //console.log(students);
             commit(STUDENTS, students);
             //console.log(this.$store.getters.students);
             resolve(response);

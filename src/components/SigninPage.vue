@@ -81,12 +81,12 @@ export default {
     },
     setLogined(token) {
       // сохраняем токен
-      console.log(token);
+      //console.log(token);
       localStorage.setItem("token", token);
       localStorage.setItem("username", this.username);
     },
     printToken() {
-      console.log(localStorage.token);
+      //console.log(localStorage.token);
     },
   },
   computed: {

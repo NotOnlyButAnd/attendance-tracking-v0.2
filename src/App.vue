@@ -54,11 +54,13 @@ export default {
     this.fetchMovies();
     this.fetchAllStudents();
     this.fetchAllTeachers();
+    this.fetchAllStudentDisciplines();
   },
   methods: {
     ...mapActions("movies", ["fetchMovies"]),
     ...mapActions("students", ["fetchAllStudents"]),
     ...mapActions("teachers", ["fetchAllTeachers"]),
+    ...mapActions("studentDisciplines", ["fetchAllStudentDisciplines"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");

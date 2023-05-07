@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import movies from "./modules/movies";
 import students from "./modules/students";
 import teachers from "./modules/teachers";
+import studentDisciplines from "./modules/studentDisciplines";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -53,8 +54,8 @@ export default new Vuex.Store({
           method: "POST",
         })
           .then((response) => {
-            console.log("RESPONSE:", response);
-            console.log("USERname:", user.username);
+            //console.log("RESPONSE:", response);
+            //console.log("USERname:", user.username);
             const token = response.data.access;
             //const user = response.data.user;
             localStorage.setItem("token", token);
@@ -103,5 +104,6 @@ export default new Vuex.Store({
     movies,
     students,
     teachers,
+    studentDisciplines,
   },
 });
