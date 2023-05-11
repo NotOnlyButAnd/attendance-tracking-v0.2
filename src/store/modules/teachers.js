@@ -33,7 +33,7 @@ const teachersStore = {
       return new Promise((resolve, reject) => {
         //commit("auth_request");
         axios({
-          url: "http://192.168.0.108:7000/api/teachers/all/",
+          url: process.env.VUE_APP_MY_API_URL + "teachers/all/",
           //data: user,
           method: "GET",
         })

@@ -33,7 +33,7 @@ const studentsStore = {
       return new Promise((resolve, reject) => {
         //commit("auth_request");
         axios({
-          url: "http://192.168.0.108:7000/api/students/all/",
+          url: process.env.VUE_APP_MY_API_URL + "students/all/",
           //data: user,
           method: "GET",
         })

@@ -40,7 +40,7 @@ const studentDisciplinesStore = {
       return new Promise((resolve, reject) => {
         //commit("auth_request");
         axios({
-          url: "http://192.168.0.108:7000/api/student-disciplines/all/",
+          url: process.env.VUE_APP_MY_API_URL + "student-disciplines/all/",
           //data: user,
           method: "GET",
         })

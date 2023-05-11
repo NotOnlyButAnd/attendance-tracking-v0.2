@@ -4,6 +4,7 @@ import movies from "./modules/movies";
 import students from "./modules/students";
 import teachers from "./modules/teachers";
 import studentDisciplines from "./modules/studentDisciplines";
+import teacherDisciplines from "./modules/teacherDisciplines";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -49,7 +50,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit("auth_request");
         axios({
-          url: "http://192.168.0.108:7000/api/token/",
+          url: process.env.VUE_APP_MY_API_URL + "token/",
           data: user,
           method: "POST",
         })
@@ -86,7 +87,7 @@ export default new Vuex.Store({
       // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
         axios({
-          url: "http://192.168.0.108:7000/api/dummy/",
+          url: process.env.VUE_APP_MY_API_URL + "dummy/",
           method: "GET",
         })
           .then((response) => {
@@ -105,5 +106,6 @@ export default new Vuex.Store({
     students,
     teachers,
     studentDisciplines,
+    teacherDisciplines,
   },
 });
