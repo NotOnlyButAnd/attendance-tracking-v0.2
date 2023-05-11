@@ -32,7 +32,7 @@
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
-      <div class="container-fluid my-5">
+      <div class="container-fluid my-3">
         <router-view :username="username"></router-view>
       </div>
     </div>
@@ -54,6 +54,7 @@ export default {
     this.fetchMovies();
     this.fetchAllStudents();
     this.fetchAllTeachers();
+    this.fetchAllStudentDisciplines();
     this.fetchAllTeacherDisciplines();
   },
   methods: {

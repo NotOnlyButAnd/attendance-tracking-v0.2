@@ -21,6 +21,7 @@ const studentDisciplinesStore = {
     getStudentDisciplinesByID: (state) => (id) => {
       //return state.students.find((student) => student.id === id);
       const currDisc = {};
+      //console.log("GETTER:", state.studentDisciplines);
       for (let studentDisc of Object.entries(state.studentDisciplines)) {
         if (studentDisc[0].indexOf(id) >= 0) {
           currDisc[studentDisc[0]] = studentDisc[1];

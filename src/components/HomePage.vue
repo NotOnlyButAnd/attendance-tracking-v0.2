@@ -9,6 +9,9 @@
             v-for="discipline in getStudentDisciplinesByID(getUsername)"
             :key="discipline.id"
             href="/reports"
+            @click="
+              onDiscClick(discipline.discipline.name, discipline.discipline.id)
+            "
           >
             {{ discipline.discipline.name }}
           </b-list-group-item>
@@ -21,12 +24,16 @@
             v-for="discipline in getTeacherDisciplinesByID(getUsername)"
             :key="discipline.id"
             href="/reports"
+            @click="
+              onDiscClick(discipline.discipline.name, discipline.discipline.id)
+            "
           >
             {{ discipline.discipline.name }}
           </b-list-group-item>
         </b-list-group>
       </div>
     </div>
+    <!-- <div>{{ getStudentDisciplinesByID(getUsername) }}</div> -->
   </div>
 </template>
 
@@ -51,6 +58,10 @@ export default {
     ...mapActions("teachers", ["fetchAllTeachers"]),
     ...mapActions("studentDisciplines", ["fetchAllStudentDisciplines"]),
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
+    onDiscClick(d_name, d_id) {
+      localStorage.setItem("currDiscName", d_name);
+      localStorage.setItem("currDiscID", d_id);
+    },
   },
   computed: {
     ...mapGetters("studentDisciplines", [

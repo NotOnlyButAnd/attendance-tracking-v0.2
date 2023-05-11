@@ -35,6 +35,8 @@
         Кафедра: {{ getTeacherByID(username).department }}
       </div>
     </div>
+    <!-- <div>{{ getStudentByID(username) }}</div>
+    <div>{{ getTeacherByID(username) }}</div> -->
   </div>
 </template>
 

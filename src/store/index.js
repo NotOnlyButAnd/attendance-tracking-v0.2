@@ -5,6 +5,7 @@ import students from "./modules/students";
 import teachers from "./modules/teachers";
 import studentDisciplines from "./modules/studentDisciplines";
 import teacherDisciplines from "./modules/teacherDisciplines";
+import visits from "./modules/visits";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -107,5 +108,6 @@ export default new Vuex.Store({
     teachers,
     studentDisciplines,
     teacherDisciplines,
+    visits,
   },
 });

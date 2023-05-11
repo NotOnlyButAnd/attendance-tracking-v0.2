@@ -19,6 +19,7 @@ const studentsStore = {
     students: (state) => state.students,
     getStudentByID: (state) => (id) => {
       //return state.students.find((student) => student.id === id);
+      //console.log("student getter:", state.students[id]);
       return state.students[id];
     },
   },
