@@ -33,6 +33,23 @@
         </b-list-group>
       </div>
     </div>
+    <div v-if="getUsername[0] === 't'" class="w-75 mx-auto homeBlock">
+      <h3>Мои учебные группы:</h3>
+      <!-- <h5>{{ getTeacherCourses }}</h5> -->
+      <div>
+        <b-button-group v-for="crs in getTeacherCourses" :key="crs.course">
+          <div class="courseGroup w-100 mx-auto border p-3 rounded">
+            {{ crs.course }} курс
+            <b-button class="courseGroup" v-for="grp in crs.groups" :key="grp">
+              {{ grp }}
+            </b-button>
+          </div>
+        </b-button-group>
+      </div>
+    </div>
+    <div v-if="getUsername[0] === 't'" class="w-75 mx-auto homeBlock">
+      <b-button>Сгенерировать QR код для пары</b-button>
+    </div>
     <!-- <div>{{ getStudentDisciplinesByID(getUsername) }}</div> -->
   </div>
 </template>
@@ -77,6 +94,32 @@ export default {
       // костыльно, но если есть возможность - разберись с computed
       return this.$store.state.username || localStorage.username;
     },
+    getTeacherGroupsByID() {
+      return ["46", "47", "4ПМ", "36", "3ИТ", "39", "27", "26", "17", "19"];
+    },
+    getTeacherCourses() {
+      // по учебным группам из getTeacherGroupsByID получает все имеющиеся курсы
+      let crs = [];
+      let tmpGr = this.getTeacherGroupsByID;
+      //console.log(tmpGr);
+      for (let i = 0; i < tmpGr.length; i++) {
+        if (!crs.some((el) => el.course == tmpGr[i][0])) {
+          let grps = [];
+          for (let j = 0; j < tmpGr.length; j++) {
+            if (tmpGr[j][0] == tmpGr[i][0]) {
+              grps.push(tmpGr[j]);
+            }
+          }
+          let tObj = {};
+          tObj["course"] = tmpGr[i][0];
+          tObj["groups"] = grps;
+          crs.push(tObj);
+        }
+        //console.log(crs.indexOf(tmpGr[i][0]));
+      }
+      //console.log(crs);
+      return crs;
+    },
   },
   props: {
     username: String,
@@ -88,7 +131,13 @@ export default {
 .homePage {
   margin-top: 10px;
 }
+.homeBlock {
+  margin-top: 25px;
+}
 .disciplineRow {
   margin-top: 15px;
+}
+.courseGroup {
+  margin: 2px;
 }
 </style>

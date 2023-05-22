@@ -56,6 +56,7 @@ export default {
     this.fetchAllTeachers();
     this.fetchAllStudentDisciplines();
     this.fetchAllTeacherDisciplines();
+    this.fetchAllVisits();
   },
   methods: {
     ...mapActions("movies", ["fetchMovies"]),
@@ -63,6 +64,7 @@ export default {
     ...mapActions("teachers", ["fetchAllTeachers"]),
     ...mapActions("studentDisciplines", ["fetchAllStudentDisciplines"]),
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
+    ...mapActions("visits", ["fetchAllVisits"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");

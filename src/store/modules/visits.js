@@ -17,7 +17,7 @@ const visitsStore = {
   },
   getters: {
     visits: (state) => state.visits,
-    getvisitsByID: (state) => (id) => {
+    getVisitsByID: (state) => (id) => {
       //return state.students.find((student) => student.id === id);
       const currVis = {};
       for (let vis of Object.entries(state.visits)) {
@@ -34,7 +34,7 @@ const visitsStore = {
     },
   },
   actions: {
-    fetchAllvisits({ commit }) {
+    fetchAllVisits({ commit }) {
       //console.log(context);
       return new Promise((resolve, reject) => {
         //commit("auth_request");

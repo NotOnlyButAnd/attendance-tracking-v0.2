@@ -13,19 +13,27 @@ const { STUDENTS } = mutations;
 const studentsStore = {
   namespaced: true,
   state: {
-    students: {},
+    studentsSt: {},
+    someVal: 1,
+    studs: {
+      s01234: { name: "Kirill", LastName: "Minin" },
+      s01235: { name: "GAGsg", LastName: "AGASGASG" },
+    },
   },
   getters: {
-    students: (state) => state.students,
+    //studentsSt: (state) => state.studentsSt,
     getStudentByID: (state) => (id) => {
       //return state.students.find((student) => student.id === id);
       //console.log("student getter:", state.students[id]);
-      return state.students[id];
+      // console.log(`Get Students by ID (${id}): `, state);
+      // console.log(`TEST Get Students by ID: `, state["students"]);
+      // console.log(`return Get Students by ID (${id}): `, state.students[id]);
+      return state.studentsSt[id];
     },
   },
   mutations: {
     [STUDENTS](state, value) {
-      state.students = value;
+      state.studentsSt = value;
     },
   },
   actions: {
