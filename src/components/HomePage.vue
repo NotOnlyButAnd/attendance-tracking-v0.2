@@ -40,7 +40,13 @@
         <b-button-group v-for="crs in getTeacherCourses" :key="crs.course">
           <div class="courseGroup w-100 mx-auto border p-3 rounded">
             {{ crs.course }} курс
-            <b-button class="courseGroup" v-for="grp in crs.groups" :key="grp">
+            <b-button
+              class="courseGroup"
+              v-for="grp in crs.groups"
+              :key="grp"
+              @click="onGrpClick(grp)"
+              href="/reports"
+            >
               {{ grp }}
             </b-button>
           </div>
@@ -48,7 +54,7 @@
       </div>
     </div>
     <div v-if="getUsername[0] === 't'" class="w-75 mx-auto homeBlock">
-      <b-button>Сгенерировать QR код для пары</b-button>
+      <b-button href="/generate_qr">Сгенерировать QR код для пары</b-button>
     </div>
     <!-- <div>{{ getStudentDisciplinesByID(getUsername) }}</div> -->
   </div>
@@ -78,6 +84,10 @@ export default {
     onDiscClick(d_name, d_id) {
       localStorage.setItem("currDiscName", d_name);
       localStorage.setItem("currDiscID", d_id);
+    },
+    onGrpClick(g_name) {
+      localStorage.setItem("currGrpName", g_name);
+      //localStorage.setItem("currDiscID", d_id);
     },
   },
   computed: {

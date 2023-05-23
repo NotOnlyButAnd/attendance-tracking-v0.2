@@ -6,6 +6,7 @@ import ProfilePage from "../components/ProfilePage";
 import SigninPage from "../components/SigninPage";
 import LoggedOutPage from "../components/LoggedOutPage";
 import ProtectedPage from "../components/ProtectedPage";
+import GenerateQR from "../components/GenerateQR";
 import store from "../store/index.js";
 
 Vue.use(Router);
@@ -43,6 +44,11 @@ const router = new Router({
       path: "/protected",
       name: "protected",
       component: ProtectedPage,
+    },
+    {
+      path: "/generate_qr",
+      name: "generate_qr",
+      component: GenerateQR,
     },
   ],
 });
