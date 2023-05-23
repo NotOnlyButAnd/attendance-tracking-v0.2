@@ -7,6 +7,8 @@ import SigninPage from "../components/SigninPage";
 import LoggedOutPage from "../components/LoggedOutPage";
 import ProtectedPage from "../components/ProtectedPage";
 import GenerateQR from "../components/GenerateQR";
+import NotFoundPage from "../components/NotFoundPage";
+import StudentCheckPage from "../components/StudentCheckPage";
 import store from "../store/index.js";
 
 Vue.use(Router);
@@ -50,6 +52,12 @@ const router = new Router({
       name: "generate_qr",
       component: GenerateQR,
     },
+    {
+      path: "/check",
+      name: "student_check",
+      component: StudentCheckPage,
+    },
+    { path: "*", name: "notFound", component: NotFoundPage },
   ],
 });
 
