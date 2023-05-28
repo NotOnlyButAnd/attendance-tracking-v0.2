@@ -21,7 +21,7 @@ const studentsStore = {
     },
   },
   getters: {
-    //studentsSt: (state) => state.studentsSt,
+    studentsSt: (state) => state.studentsSt,
     getStudentByID: (state) => (id) => {
       //return state.students.find((student) => student.id === id);
       //console.log("student getter:", state.students[id]);

@@ -105,7 +105,43 @@ export default {
       return this.$store.state.username || localStorage.username;
     },
     getTeacherGroupsByID() {
-      return ["46", "47", "4ПМ", "36", "3ИТ", "39", "27", "26", "17", "19"];
+      let tmpTeacherDisc = this.getTeacherDisciplinesByID(this.getUsername);
+      let tmpTeacherDiscIDs = [];
+      // console.log("Curr teacher disciplines:", tmpTeacherDisc);
+      for (let key in tmpTeacherDisc) {
+        // console.log(
+        //   "TDisc: ",
+        //   tmpTeacherDisc[key],
+        //   " id: ",
+        //   tmpTeacherDisc[key].discipline.id
+        // );
+        tmpTeacherDiscIDs.push(tmpTeacherDisc[key].discipline.id);
+      }
+      console.log("Curr teacher disciplines ids:", tmpTeacherDiscIDs);
+      let tmpGroupsNamesByDiscs = [];
+      // ВОЗМОЖНО СЛОМАЕТСЯ, СЛЕДИ ЗА ГРУППАМИ
+      for (let key in this.studentDisciplines) {
+        let currDiscID = this.studentDisciplines[key].discipline.id;
+        let currGrp = this.studentDisciplines[key].student.group;
+        // console.log(
+        //   "cur grps: ",
+        //   tmpGroupsNamesByDiscs,
+        //   "1: ",
+        //   tmpTeacherDiscIDs.find((i) => i === currDiscID),
+        //   " 2: ",
+        //   tmpGroupsNamesByDiscs.find((i) => i === currGrp)
+        // );
+        if (
+          tmpTeacherDiscIDs.find((i) => i === currDiscID) &&
+          !tmpGroupsNamesByDiscs.find((i) => i === currGrp)
+        ) {
+          tmpGroupsNamesByDiscs.push(currGrp);
+        }
+      }
+      // console.log("Temp groups:", tmpGroupsNamesByDiscs);
+      // console.log("All student disciplines:", this.studentDisciplines);
+      //return ["46", "47", "4ПМ", "36", "3ИТ", "39", "27", "26", "17", "19"];
+      return tmpGroupsNamesByDiscs;
     },
     getTeacherCourses() {
       // по учебным группам из getTeacherGroupsByID получает все имеющиеся курсы

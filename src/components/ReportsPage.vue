@@ -80,6 +80,7 @@
       </div>
       <div v-if="username[0] === 't'">
         <b-table
+          v-if="hasCurrGrpThisDisc"
           striped
           bordered
           hover
@@ -90,6 +91,7 @@
           :items="getTeacherTableItems"
           :fields="getTeacherTableFields"
         ></b-table>
+        <h1 v-else>У выбранной группы нет этого предмета!</h1>
       </div>
       <!-- <div>{{ this.visits }}</div> -->
     </div>
@@ -119,7 +121,7 @@ export default {
   },
   computed: {
     ...mapGetters("visits", ["visits", "getVisitsByID"]),
-    ...mapGetters("students", ["getStudentByID"]),
+    ...mapGetters("students", ["studentsSt", "getStudentByID"]),
     ...mapGetters("studentDisciplines", [
       "studentDisciplines",
       "getStudentDisciplinesByID",
@@ -141,7 +143,26 @@ export default {
       );
     },
     getTeacherGroupsByID() {
-      return ["46", "47", "4ПМ", "36", "39", "3ИТ", "26", "27", "17", "19"];
+      let tmpTeacherDisc = this.getTeacherDisciplinesByID(this.username);
+      let tmpTeacherDiscIDs = [];
+      for (let key in tmpTeacherDisc) {
+        tmpTeacherDiscIDs.push(tmpTeacherDisc[key].discipline.id);
+      }
+      // console.log("Curr teacher disciplines ids:", tmpTeacherDiscIDs);
+      let tmpGroupsNamesByDiscs = [];
+      // ВОЗМОЖНО СЛОМАЕТСЯ, СЛЕДИ ЗА ГРУППАМИ
+      for (let key in this.studentDisciplines) {
+        let currDiscID = this.studentDisciplines[key].discipline.id;
+        let currGrp = this.studentDisciplines[key].student.group;
+        if (
+          tmpTeacherDiscIDs.find((i) => i === currDiscID) &&
+          !tmpGroupsNamesByDiscs.find((i) => i === currGrp)
+        ) {
+          tmpGroupsNamesByDiscs.push(currGrp);
+        }
+      }
+      //return ["46", "47", "4ПМ", "36", "3ИТ", "39", "27", "26", "17", "19"];
+      return tmpGroupsNamesByDiscs;
     },
     getTableFields() {
       let currFields = [];
@@ -197,23 +218,6 @@ export default {
       for (let i = 0; i < 10; i++) {
         currItems[0][`dt-${i}`] = states[i];
       }
-      // УДАЛИТЬ ЭТИ КОСТЫЛИ И ЗАМЕНИТЬ НА ФАМИЛИИ НОРМАЛЬНЫЕ
-      // currItems.push({});
-      // Object.assign(currItems[1], currItems[0]);
-      // currItems[1]["name"] = "Петрова А.А.";
-      // currItems.push({});
-      // Object.assign(currItems[2], currItems[0]);
-      // currItems[2]["name"] = "Петров П.П.";
-      // currItems.push({});
-      // Object.assign(currItems[3], currItems[0]);
-      // currItems[3]["name"] = "Сидоров И.А.";
-      // currItems.push({});
-      // Object.assign(currItems[4], currItems[0]);
-      // currItems[4]["name"] = "Сидорова М.К.";
-      // currItems.push({});
-      // Object.assign(currItems[5], currItems[0]);
-      // currItems[5]["name"] = "Филькин С.С.";
-
       return currItems;
     },
     getTeacherTableFields() {
@@ -223,6 +227,7 @@ export default {
       // get all dates from 0 to 10
       let dts = [];
       let tVisitsAll = Object.values(this.visits);
+      // console.log("VISITS ALL", tVisitsAll);
       let tVisits = [];
       for (let i = 0; i < tVisitsAll.length; i++) {
         if (
@@ -230,26 +235,118 @@ export default {
             this.currDisciplineID &&
           tVisitsAll[i].studentDiscipline.student.group == this.currGrpName
         ) {
-          if (dts.find((el) => el == tVisitsAll[i].dt) == -1) {
+          if (!dts.find((el) => el == tVisitsAll[i].dt)) {
             dts.push(tVisitsAll[i].dt);
           }
-          console.log(
-            "Finded?",
-            dts.find((el) => el == tVisitsAll[i].dt)
-          );
+          // console.log(
+          //   "Finded? dt=",
+          //   tVisitsAll[i].dt,
+          //   "; curr dts=",
+          //   dts,
+          //   dts.find((el) => el == tVisitsAll[i].dt)
+          // );
           tVisits.push(tVisitsAll[i]);
         }
       }
-      console.log("Dates::", dts);
-      console.log("Visits by disc and gr:", tVisits);
+      // делаем нормальные даты
+      for (let i = 0; i < dts.length; i++) {
+        dts[i] = this.getNormDt(dts[i]);
+      }
+      // console.log("Dates:", dts);
+      // console.log("Visits by disc and gr:", tVisits);
+      // дополняем до 10
+      for (let i = dts.length; i < 10; i++) {
+        dts.push("....-..-..");
+      }
+      // add dates to fields
+      for (let i = 0; i < dts.length; i++) {
+        currFields.push({
+          key: `dt-${i}`,
+          label: dts[i],
+          sortable: false,
+        });
+      }
       return currFields;
     },
     getTeacherTableItems() {
       let currItems = [];
+      // получаем всех студентов данной группы
+      let tStudentsAll = this.studentsSt;
+      // console.log("all studs: ", tStudentsAll);
+      let indx = 0;
+      // собираем читаемые ФИО всех студентов выбранной группы
+      for (let key in tStudentsAll) {
+        // если студент в выбранной группе то добавляем что надо
+        if (tStudentsAll[key].group === this.currGrpName) {
+          // console.log(this.getStudentFullNameByLogin(key));
+          // создаем новую строку, добавляем в первую колонку ФИО
+          currItems.push({ name: this.getStudentFullNameByLogin(key) });
+          let states = [];
+          let tVisits = Object.values(this.getVisitsByID(key));
+          // console.log("curr visits: ", tVisits);
+          for (let i = 0; i < tVisits.length; i++) {
+            //states.push(tVisits[i].state);
+            if (
+              tVisits[i].studentDiscipline.discipline.id ==
+              this.currDisciplineID
+            ) {
+              states.push(tVisits[i].state);
+            } else {
+              //states.push("-");
+            }
+          }
+          for (let i = states.length; i < 10; i++) {
+            states.push("-");
+          }
+          // console.log("curr states:", states);
+          // add dates to fields
+          for (let i = 0; i < 10; i++) {
+            currItems[indx][`dt-${i}`] = states[i];
+          }
+          indx++;
+        }
+      }
       return currItems;
+    },
+    hasCurrGrpThisDisc() {
+      // получаем все дисциплины выбранной группы
+      let tStudDiscAll = this.studentDisciplines;
+      let currGrpDiscIDS = [];
+      for (let key in tStudDiscAll) {
+        if (tStudDiscAll[key].student.group === this.currGrpName) {
+          if (
+            !currGrpDiscIDS.find((i) => i === tStudDiscAll[key].discipline.id)
+          )
+            currGrpDiscIDS.push(tStudDiscAll[key].discipline.id);
+        }
+      }
+      // console.log("t stud disc: ", tStudDiscAll);
+      // console.log("curr grp disciplines ids: ", currGrpDiscIDS);
+      // console.log(
+      //   "HAS ",
+      //   currGrpDiscIDS,
+      //   " ",
+      //   this.currDisciplineID,
+      //   " ??? :",
+      //   currGrpDiscIDS.find((i) => i == this.currDisciplineID)
+      // );
+      if (currGrpDiscIDS.find((i) => i == this.currDisciplineID)) {
+        return true;
+      } else return false;
     },
   },
   methods: {
+    getStudentFullNameByLogin(usrname) {
+      let tObj = this.getStudentByID(usrname);
+      return (
+        tObj.user.last_name +
+        " " +
+        tObj.user.first_name[0] +
+        "." +
+        tObj.middleName[0] +
+        "."
+      );
+    },
     onDisciplineClick(disc_name, disc_id, e) {
       console.log("clicked on:", disc_name, "id:", disc_id, "\nEvent:", e);
       localStorage.setItem("currDiscName", disc_name);
