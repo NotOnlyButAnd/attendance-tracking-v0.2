@@ -90,13 +90,137 @@
           label-sort-clear=""
           :items="getTeacherTableItems"
           :fields="getTeacherTableFields"
-        ></b-table>
+        >
+          <template v-if="fields[1].label[0] != '.'" #cell(dt_0)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_0"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[2].label[0] != '.'" #cell(dt_1)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_1"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[3].label[0] != '.'" #cell(dt_2)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_2"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[4].label[0] != '.'" #cell(dt_3)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_3"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[5].label[0] != '.'" #cell(dt_4)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_4"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[6].label[0] != '.'" #cell(dt_5)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_5"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[7].label[0] != '.'" #cell(dt_6)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_6"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[8].label[0] != '.'" #cell(dt_7)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_7"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[9].label[0] != '.'" #cell(dt_8)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_8"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+          <template v-if="fields[10].label[0] != '.'" #cell(dt_9)="data">
+            <b-form-select
+              v-if="isEditG"
+              v-model="items[data.index].dt_9"
+              :options="['н', 'б', ' . ']"
+              class="form-control"
+            ></b-form-select>
+            <div v-else>
+              {{ data.value }}
+            </div>
+          </template>
+        </b-table>
         <h1 v-else>У выбранной группы нет этого предмета!</h1>
       </div>
       <!-- <div>{{ this.visits }}</div> -->
     </div>
     <div v-if="username[0] === 't'">
-      <b-button>Внести изменения</b-button>
+      <b-button v-if="!isEditG" @click="editAllCellHandler()">
+        Внести изменения
+      </b-button>
+      <b-button v-if="isEditG" @click="sendChangesHandler()" variant="danger">
+        Сохранить изменения
+      </b-button>
+    </div>
+    <div>
+      <b-card class="mt-3" header="Fields">
+        <pre class="m-0">{{ fields }}</pre>
+      </b-card>
+      <b-card class="mt-3" header="Items">
+        <pre class="m-0">{{ items }}</pre>
+      </b-card>
     </div>
   </div>
 </template>
@@ -111,8 +235,11 @@ export default {
       currDisciplineName: localStorage.currDiscName || "Выберите дисциплину",
       currGrpName: localStorage.currGrpName || "Выберите группу",
       currDisciplineID: localStorage.currDiscID || -1,
-      tableFields: [],
-      tableItems: [],
+      table: {},
+      items: [],
+      fields: [],
+      selectedCell: null,
+      isEditG: false,
       currFirstIndDt: 0,
       currLastIndDt: 10,
       currPage: 1,
@@ -261,11 +388,14 @@ export default {
       // add dates to fields
       for (let i = 0; i < dts.length; i++) {
         currFields.push({
-          key: `dt-${i}`,
+          key: `dt_${i}`,
           label: dts[i],
           sortable: false,
         });
       }
+      console.log("Get fields...");
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.fields = currFields;
       return currFields;
     },
     getTeacherTableItems() {
@@ -280,7 +410,10 @@ export default {
         if (tStudentsAll[key].group === this.currGrpName) {
           // console.log(this.getStudentFullNameByLogin(key));
           // создаем новую строку, добавляем в первую колонку ФИО
-          currItems.push({ name: this.getStudentFullNameByLogin(key) });
+          currItems.push({
+            name: this.getStudentFullNameByLogin(key),
+            usrnm: key,
+          });
           let states = [];
           let tVisits = Object.values(this.getVisitsByID(key));
           // console.log("curr visits: ", tVisits);
@@ -290,7 +423,12 @@ export default {
               tVisits[i].studentDiscipline.discipline.id ==
               this.currDisciplineID
             ) {
-              states.push(tVisits[i].state);
+              if (tVisits[i].state) {
+                states.push(tVisits[i].state);
+              } else {
+                // НУЖНО ДЛЯ ТОГО ЧТОБЫ div в изменениях таблицы отрисовывался
+                states.push(" . ");
+              }
             } else {
               //states.push("-");
             }
@@ -301,11 +439,15 @@ export default {
           // console.log("curr states:", states);
           // add dates to fields
           for (let i = 0; i < 10; i++) {
-            currItems[indx][`dt-${i}`] = states[i];
+            currItems[indx][`dt_${i}`] = states[i];
           }
           indx++;
         }
       }
+      console.log("Get items...");
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.items = currItems;
+      this.addIsEditableToItems();
       return currItems;
     },
     hasCurrGrpThisDisc() {
@@ -336,6 +478,28 @@ export default {
     },
   },
   methods: {
+    sendChangesHandler() {
+      alert("ОК, отправляем на сервер!");
+      console.log("Send fields: ", this.fields);
+      console.log("Send items: ", this.items);
+      this.isEditG = false;
+    },
+    editAllCellHandler() {
+      console.log("CLICKED ON edit button.. Before: ", this.isEditG);
+      this.isEditG = !this.isEditG;
+      console.log("After: ", this.isEditG);
+    },
+    // DEPRECATED
+    editCellHandler(data, name) {
+      console.log("CLOCKED ON ", name);
+      this.items = this.items.map((item) => ({ ...item, isEdit: false }));
+      this.items[data.index].isEdit = true;
+      this.selectedCell = name;
+    },
+    // END DEPRECATED
+    addIsEditableToItems() {
+      this.items = this.items.map((item) => ({ ...item, isEdit: false }));
+    },
     getStudentFullNameByLogin(usrname) {
       let tObj = this.getStudentByID(usrname);
       return (
@@ -386,5 +550,9 @@ export default {
 }
 .dropitem {
   color: #a5a5a5;
+}
+.mySpan {
+  height: 100 px;
+  width: 100 px;
 }
 </style>
