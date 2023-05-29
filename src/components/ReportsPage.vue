@@ -95,7 +95,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_0"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -106,7 +106,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_1"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -117,7 +117,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_2"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -128,7 +128,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_3"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -139,7 +139,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_4"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -150,7 +150,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_5"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -161,7 +161,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_6"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -172,7 +172,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_7"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -183,7 +183,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_8"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -194,7 +194,7 @@
             <b-form-select
               v-if="isEditG"
               v-model="items[data.index].dt_9"
-              :options="['н', 'б', ' . ']"
+              :options="['н', 'б', '.']"
               class="form-control"
             ></b-form-select>
             <div v-else>
@@ -209,6 +209,13 @@
     <div v-if="username[0] === 't'">
       <b-button v-if="!isEditG" @click="editAllCellHandler()">
         Внести изменения
+      </b-button>
+      <b-button
+        v-if="isEditG"
+        @click="discardChangesHandler()"
+        variant="outline-secondary"
+      >
+        Отмена
       </b-button>
       <b-button v-if="isEditG" @click="sendChangesHandler()" variant="danger">
         Сохранить изменения
@@ -226,7 +233,8 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
+import axios from "axios";
 
 export default {
   name: "ReportsPage",
@@ -235,9 +243,11 @@ export default {
       currDisciplineName: localStorage.currDiscName || "Выберите дисциплину",
       currGrpName: localStorage.currGrpName || "Выберите группу",
       currDisciplineID: localStorage.currDiscID || -1,
-      table: {},
+      forRequests: {},
       items: [],
+      itemsBackup: [],
       fields: [],
+      fieldsBackup: [],
       selectedCell: null,
       isEditG: false,
       currFirstIndDt: 0,
@@ -415,6 +425,9 @@ export default {
             usrnm: key,
           });
           let states = [];
+          // КОСТЫЛЬ для получения айдишников посещений
+          let visitsIDs = [];
+          // КОСТЫЛЬ для получения айдишников посещений
           let tVisits = Object.values(this.getVisitsByID(key));
           // console.log("curr visits: ", tVisits);
           for (let i = 0; i < tVisits.length; i++) {
@@ -423,6 +436,7 @@ export default {
               tVisits[i].studentDiscipline.discipline.id ==
               this.currDisciplineID
             ) {
+              visitsIDs.push(tVisits[i].id);
               if (tVisits[i].state) {
                 states.push(tVisits[i].state);
               } else {
@@ -434,6 +448,7 @@ export default {
             }
           }
           for (let i = states.length; i < 10; i++) {
+            visitsIDs.push(-1);
             states.push("-");
           }
           // console.log("curr states:", states);
@@ -441,6 +456,7 @@ export default {
           for (let i = 0; i < 10; i++) {
             currItems[indx][`dt_${i}`] = states[i];
           }
+          currItems[indx][`visitIDs`] = Array.from(visitsIDs);
           indx++;
         }
       }
@@ -478,14 +494,103 @@ export default {
     },
   },
   methods: {
+    ...mapActions("visits", ["fetchAllVisits"]),
+    discardChangesHandler() {
+      console.log("Отмена...");
+      // достаем данные из бэкапа, или делаем запрос опять на выгрузку обычную
+      this.items = Array.from(this.itemsBackup);
+      this.fields = Array.from(this.fieldsBackup);
+      //this.getTeacherTableItems;
+      this.isEditG = false;
+    },
     sendChangesHandler() {
       alert("ОК, отправляем на сервер!");
-      console.log("Send fields: ", this.fields);
-      console.log("Send items: ", this.items);
+      //console.log("Send fields: ", this.fields);
+      //console.log("Send items: ", this.items);
+      // составляем данные для запроса:
+      // получаем teacherDiscipline (id) для авторизованного препода
+      let tTeachDiscAll = this.getTeacherDisciplinesByID(this.username);
+      //console.log("TDISC ALL: ", tTeachDiscAll);
+      let currTeachDisc = -1;
+      for (let key in tTeachDiscAll) {
+        if (tTeachDiscAll[key].discipline.id == this.currDisciplineID) {
+          currTeachDisc = tTeachDiscAll[key].id;
+        }
+      }
+      //console.log("CURR TEACH DISC ID: ", currTeachDisc);
+      // пробегаемся по всем студентам
+      for (let i = 0; i < this.items.length; i++) {
+        // получаем studentDiscipline (id) для текущего студента
+        let tStudDiscAll = this.getStudentDisciplinesByID(this.items[i].usrnm);
+        //console.log("SDISC ALL: ", tStudDiscAll);
+        let currStudDisc = -1;
+        for (let key in tStudDiscAll) {
+          if (tStudDiscAll[key].discipline.id == this.currDisciplineID) {
+            currStudDisc = tStudDiscAll[key].id;
+          }
+        }
+        //console.log("CURR STUD DISC ID : ", currStudDisc);
+        //console.log("ITEM: ", this.items[i]);
+        let cntr = 0;
+        // пробегаемся по всем 10 датам в текущем item
+        for (let key in this.items[i]) {
+          // рассматриваем только именно стэйты с датами
+          if (key[0] == "d" && key[1] == "t") {
+            // если в текущем поле не "-" то обновляем иначе ничего не делаем
+            if (this.items[i][key] != "-") {
+              //console.log("key: ", key, " val: ", this.items[i][key]);
+              // получим дату (строку) для текущего ключа
+              let tDtStr = "";
+              for (let j = 0; j < this.fields.length; j++) {
+                if (this.fields[j].key == key) {
+                  tDtStr = this.getDumbDt(this.fields[j].label);
+                  break;
+                }
+              }
+              //console.log("dt: ", tDtStr);
+              //console.log("visit id: ", this.items[i].visitIDs[cntr], "cntr: ");
+              // ИТОГО ПОЛУЧАЕМ ТЕЛО ЗАПРОСА
+              let tReq = {};
+              //tReq["id"] = this.items[i].visitIDs[cntr];
+              tReq["dt"] = tDtStr;
+              tReq["state"] = this.items[i][key];
+              tReq["studentDiscipline"] = currStudDisc;
+              tReq["teacherDiscipline"] = currTeachDisc;
+              console.log("FINAL req body (not needed id): ", tReq);
+              // здесь делаем PATCH запрос
+              this.sendPatchVisit(this.items[i].visitIDs[cntr], tReq);
+            }
+            cntr++;
+          }
+        }
+      }
+      this.fetchAllVisits();
       this.isEditG = false;
+    },
+    sendPatchVisit(visitId, reqData) {
+      // eslint-disable-next-line no-unused-vars
+      return new Promise((resolve, reject) => {
+        axios({
+          url: process.env.VUE_APP_MY_API_URL + "visits/update/" + visitId,
+          data: reqData,
+          method: "PATCH",
+        })
+          .then((response) => {
+            console.log("RESPONSE (sendPatchVisit):", response);
+            console.log("visits: ", this.visits);
+            resolve(response);
+          })
+          .catch((err) => {
+            console.log("ERR (sendPatchVisit):", err);
+            reject(err);
+          });
+      });
     },
     editAllCellHandler() {
       console.log("CLICKED ON edit button.. Before: ", this.isEditG);
+      // кладем бэкапы массивов
+      this.itemsBackup = Array.from(this.items);
+      this.fieldsBackup = Array.from(this.fields);
       this.isEditG = !this.isEditG;
       console.log("After: ", this.isEditG);
     },
@@ -535,6 +640,20 @@ export default {
         dt[1] +
         dt[2] +
         dt[3]
+      );
+    },
+    getDumbDt(dt) {
+      return (
+        dt[7] +
+        dt[8] +
+        dt[9] +
+        dt[10] +
+        "-" +
+        dt[3] +
+        dt[4] +
+        "-" +
+        dt[0] +
+        dt[1]
       );
     },
   },
