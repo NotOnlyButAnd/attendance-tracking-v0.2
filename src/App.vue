@@ -51,20 +51,22 @@ export default {
     };
   },
   mounted() {
-    this.fetchMovies();
+    //this.fetchMovies();
     this.fetchAllStudents();
     this.fetchAllTeachers();
     this.fetchAllStudentDisciplines();
     this.fetchAllTeacherDisciplines();
     this.fetchAllVisits();
+    this.fetchAllWeekTypes();
   },
   methods: {
-    ...mapActions("movies", ["fetchMovies"]),
+    //...mapActions("movies", ["fetchMovies"]),
     ...mapActions("students", ["fetchAllStudents"]),
     ...mapActions("teachers", ["fetchAllTeachers"]),
     ...mapActions("studentDisciplines", ["fetchAllStudentDisciplines"]),
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
     ...mapActions("visits", ["fetchAllVisits"]),
+    ...mapActions("weekTypes", ["fetchAllWeekTypes"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");

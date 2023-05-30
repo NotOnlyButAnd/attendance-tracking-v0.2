@@ -221,14 +221,14 @@
         Сохранить изменения
       </b-button>
     </div>
-    <div>
+    <!-- <div>
       <b-card class="mt-3" header="Fields">
         <pre class="m-0">{{ fields }}</pre>
       </b-card>
       <b-card class="mt-3" header="Items">
         <pre class="m-0">{{ items }}</pre>
       </b-card>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -556,7 +556,7 @@ export default {
               tReq["state"] = this.items[i][key];
               tReq["studentDiscipline"] = currStudDisc;
               tReq["teacherDiscipline"] = currTeachDisc;
-              console.log("FINAL req body (not needed id): ", tReq);
+              //console.log("FINAL req body (not needed id): ", tReq);
               // здесь делаем PATCH запрос
               this.sendPatchVisit(this.items[i].visitIDs[cntr], tReq);
             }
@@ -566,6 +566,8 @@ export default {
       }
       this.fetchAllVisits();
       this.isEditG = false;
+
+      this.fetchAllVisits();
     },
     sendPatchVisit(visitId, reqData) {
       // eslint-disable-next-line no-unused-vars
@@ -576,12 +578,12 @@ export default {
           method: "PATCH",
         })
           .then((response) => {
-            console.log("RESPONSE (sendPatchVisit):", response);
-            console.log("visits: ", this.visits);
+            //console.log("RESPONSE (sendPatchVisit):", response);
+            //console.log("visits: ", this.visits);
             resolve(response);
           })
           .catch((err) => {
-            console.log("ERR (sendPatchVisit):", err);
+            //console.log("ERR (sendPatchVisit):", err);
             reject(err);
           });
       });
