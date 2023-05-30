@@ -1,6 +1,6 @@
 <template>
   <div class="GenerateQRPage" v-if="username[0] === 't'">
-    Привет, {{ username }}! Это страница для создания QR кода
+    <!-- Привет, {{ username }}! Это страница для создания QR кода -->
     <div class="w-75 mx-auto border p-3 rounded">
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <b-form-group
@@ -124,6 +124,9 @@
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
       </b-card>
+      <div>
+        {{ getCurrWeekType }}
+      </div>
     </div>
     <!-- Проверка: время текущее между временами начала и конца или нет? -->
     <!-- <h5>Time start: {{ setTimeStart }}</h5>
@@ -138,6 +141,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "GenerateQR",
   data() {
@@ -179,6 +184,18 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("weekTypes", [
+      "weekTypes",
+      "getWeekTypeByID",
+      "getWeekTypeByDT",
+    ]),
+    getCurrWeekType() {
+      console.log("СЧИТАЕМ ДАТУ");
+      let currDt = new Date();
+      // проверено ниже - работает норм
+      //currDt.setDate(currDt.getDate() - 3);
+      return this.getWeekTypeByDT(currDt);
+    },
     setTimeStart() {
       this.dtTimeBegin.setHours(9, 30, 0);
       console.log(this.dtTimeBegin);

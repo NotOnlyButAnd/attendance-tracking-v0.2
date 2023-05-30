@@ -21,6 +21,21 @@ const weekTypesStore = {
       //return state.students.find((student) => student.id === id);
       return state.weekTypes[id];
     },
+    getWeekTypeByDT: (state) => (dt) => {
+      //return state.students.find((student) => student.id === id);
+      for (let key in state.weekTypes) {
+        let tDtBegStr = state.weekTypes[key].dtBegin;
+        let tDtBeg = new Date(tDtBegStr + "T00:00:00");
+        let tDtEndStr = state.weekTypes[key].dtEnd;
+        let tDtEnd = new Date(tDtEndStr + "T23:59:59");
+        // let tDt = new Date(dtStr + "T00:00:00");
+        console.log("dtBeg: ", tDtBeg, " dtEnd: ", tDtEnd, "currDt: ", dt);
+        if (dt >= tDtBeg && dt <= tDtEnd) {
+          return state.weekTypes[key].type;
+        }
+      }
+      return 0;
+    },
   },
   mutations: {
     [WEEKTYPES](state, value) {
