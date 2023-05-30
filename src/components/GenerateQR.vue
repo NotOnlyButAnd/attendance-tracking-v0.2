@@ -127,6 +127,9 @@
       <div>
         {{ getCurrWeekType }}
       </div>
+      <div>
+        {{ getCurrClassOrder }}
+      </div>
     </div>
     <!-- Проверка: время текущее между временами начала и конца или нет? -->
     <!-- <h5>Time start: {{ setTimeStart }}</h5>
@@ -189,6 +192,11 @@ export default {
       "getWeekTypeByID",
       "getWeekTypeByDT",
     ]),
+    ...mapGetters("classOrders", [
+      "classOrders",
+      "getClassOrderByID",
+      "getClassOrderByTime",
+    ]),
     getCurrWeekType() {
       console.log("СЧИТАЕМ ДАТУ");
       let currDt = new Date();
@@ -196,6 +204,22 @@ export default {
       //currDt.setDate(currDt.getDate() - 3);
       return this.getWeekTypeByDT(currDt);
     },
+    getCurrClassOrder() {
+      console.log("СЧИТАЕМ НОМЕР ПАРЫ");
+      let currDt = new Date();
+      // проверено ниже - работает норм
+      //currDt.setHours(10, 57, 0);
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.form.classNum = this.getClassOrderByTime(currDt).number;
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.form.dtTimeBegin = this.getClassOrderByTime(currDt).timeBegin;
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.form.dtTimeEnd = this.getClassOrderByTime(currDt).timeEnd;
+      return this.getClassOrderByTime(currDt);
+    },
+    // getNormDtTime(timeStr) {
+    //   return timeStr;
+    // },
     setTimeStart() {
       this.dtTimeBegin.setHours(9, 30, 0);
       console.log(this.dtTimeBegin);

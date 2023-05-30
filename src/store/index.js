@@ -7,6 +7,7 @@ import studentDisciplines from "./modules/studentDisciplines";
 import teacherDisciplines from "./modules/teacherDisciplines";
 import visits from "./modules/visits";
 import weekTypes from "./modules/weekTypes";
+import classOrders from "./modules/classOrders";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -111,5 +112,6 @@ export default new Vuex.Store({
     teacherDisciplines,
     visits,
     weekTypes,
+    classOrders,
   },
 });
