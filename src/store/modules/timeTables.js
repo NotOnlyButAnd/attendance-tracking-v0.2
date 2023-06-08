@@ -1,26 +1,26 @@
 import axios from "axios";
 import mutations from "@/store/mutations";
 
-function serializeResponse(classOrders) {
-  return classOrders.reduce((acc, classOrder) => {
-    acc[classOrder.id] = classOrder;
+function serializeResponse(timeTables) {
+  return timeTables.reduce((acc, timeTable) => {
+    acc[timeTable.id] = timeTable;
     return acc;
   }, {});
 }
 
-const { CLASSORDERS } = mutations;
+const { TIMETABLES } = mutations;
 
-const classOrdersStore = {
+const timeTablesStore = {
   namespaced: true,
   state: {
-    classOrders: {},
+    timeTables: {},
   },
   getters: {
-    classOrders: (state) => state.classOrders,
-    classOrderByID: (state) => (id) => {
-      return state.classOrders[id];
+    timeTables: (state) => state.timeTables,
+    ctimeTableByID: (state) => (id) => {
+      return state.timeTables[id];
     },
-    getClassOrderByTime: (state) => (tm) => {
+    /*getClassOrderByTime: (state) => (tm) => {
       //return state.students.find((student) => student.id === id);
       for (let key in state.classOrders) {
         let tStr = state.classOrders[key].timeBegin;
@@ -45,14 +45,14 @@ const classOrdersStore = {
           Number(tStr.substring(3, 5)),
           0
         );
-        // console.log(
-        //   "timeBeg: ",
-        //   tTimeBeg,
-        //   " timeEnd: ",
-        //   tTimeEnd,
-        //   "currTime: ",
-        //   tm
-        // );
+        console.log(
+          "timeBeg: ",
+          tTimeBeg,
+          " timeEnd: ",
+          tTimeEnd,
+          "currTime: ",
+          tm
+        );
         if (tm >= tTimeBeg && tm <= tTimeEnd) {
           return state.classOrders[key];
         }
@@ -63,24 +63,24 @@ const classOrdersStore = {
         timeBegin: "00:00:00",
         timeEnd: "00:00:00",
       };
-    },
+    },*/
   },
   mutations: {
-    [CLASSORDERS](state, value) {
-      state.classOrders = value;
+    [TIMETABLES](state, value) {
+      state.timeTables = value;
     },
   },
   actions: {
-    fetchAllClassOrders({ commit }) {
+    fetchAllTimeTables({ commit }) {
       return new Promise((resolve, reject) => {
         axios({
-          url: process.env.VUE_APP_MY_API_URL + "class-orders/all/",
+          url: process.env.VUE_APP_MY_API_URL + "time-tables/all/",
           method: "GET",
         })
           .then((response) => {
             //console.log("RESPONSE:", response.data);
-            const classOrders = serializeResponse(response.data);
-            commit(CLASSORDERS, classOrders);
+            const timeTables = serializeResponse(response.data);
+            commit(TIMETABLES, timeTables);
             resolve(response);
           })
           .catch((err) => {
@@ -92,4 +92,4 @@ const classOrdersStore = {
   },
 };
 
-export default classOrdersStore;
+export default timeTablesStore;

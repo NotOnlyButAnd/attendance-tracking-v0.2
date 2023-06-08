@@ -121,15 +121,17 @@
           >Сбросить</b-button
         > -->
       </b-form>
+      <div v-if="isShowQR">
+        <b-img :src="logo1" fluid alt=" "></b-img>
+      </div>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
       </b-card>
-      <div>
-        {{ getCurrWeekType }}
-      </div>
-      <div>
-        {{ getCurrClassOrder }}
-      </div>
+      <div>weekType: {{ getCurrWeekType }}</div>
+      <div>classOrder: {{ getCurrClassOrder }}</div>
+      <div>currDt: {{ getCurrDt }}</div>
+      <div>currDisc: {{ getCurrDiscipline }}</div>
+      <!-- <div>{{ getTeacherDisciplinesByID(username) }}</div> -->
     </div>
     <!-- Проверка: время текущее между временами начала и конца или нет? -->
     <!-- <h5>Time start: {{ setTimeStart }}</h5>
@@ -144,7 +146,8 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
+import axios from "axios";
 
 export default {
   name: "GenerateQR",
@@ -152,7 +155,7 @@ export default {
     return {
       form: {
         discipline: "",
-        teacher: "",
+        teacher: this.username || "",
         classNum: null,
         dtTimeBegin: "",
         dtTimeEnd: "",
@@ -164,12 +167,41 @@ export default {
       currDateTime: new Date(),
       dtTimeBegin: new Date(),
       dtTimeEnd: new Date(),
+      logo1: NaN,
+      isShowQR: false,
     };
   },
   methods: {
+    ...mapActions("timeTables", ["fetchAllTimeTables"]),
+    ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
     onSubmit(event) {
       event.preventDefault();
       alert(JSON.stringify(this.form));
+      this.sendPostQR('{"message": "HELLO/KUBSU/IM/QR/CODE"}');
+      this.isShowQR = true;
+    },
+    sendPostQR(reqData) {
+      // eslint-disable-next-line no-unused-vars
+      return new Promise((resolve, reject) => {
+        axios({
+          url: process.env.VUE_APP_MY_API_URL + "generate-qr",
+          data: reqData,
+          method: "POST",
+          responseType: "blob",
+        })
+          .then((response) => {
+            console.log("!!!ЧЕ-то получили из generate-qr!!!");
+            console.log("RESPONSE (sendPostQR):", response);
+            const urlCreator = window.URL || window.webkitURL;
+            this.logo1 = urlCreator.createObjectURL(response.data);
+            //console.log("visits: ", this.visits);
+            resolve(response);
+          })
+          .catch((err) => {
+            //console.log("ERR (sendPatchVisit):", err);
+            reject(err);
+          });
+      });
     },
     onReset(event) {
       event.preventDefault();
@@ -187,6 +219,10 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("teacherDisciplines", [
+      "teacherDisciplines",
+      "getTeacherDisciplinesByID",
+    ]),
     ...mapGetters("weekTypes", [
       "weekTypes",
       "getWeekTypeByID",
@@ -197,8 +233,51 @@ export default {
       "getClassOrderByID",
       "getClassOrderByTime",
     ]),
-    getCurrWeekType() {
+    ...mapGetters("timeTables", ["timeTables", "gettimeTableByID"]),
+    getCurrDiscipline() {
+      console.log("Считаем пару текущую");
+      let currDt = new Date();
+      let allTimeTables = this.timeTables;
+      //console.log("DAY: ", currDt.getDay());
+      for (let key in allTimeTables) {
+        //console.log(allTimeTables[key]);
+        if (
+          allTimeTables[key].classOrder ==
+            this.getClassOrderByTime(currDt).number &&
+          allTimeTables[key].weekDay == currDt.getDay() &&
+          allTimeTables[key].weekType == this.getWeekTypeByDT(currDt)
+        ) {
+          console.log(allTimeTables[key]);
+          let allTDisc = this.getTeacherDisciplinesByID(this.username);
+          for (let key1 in allTDisc) {
+            if (allTDisc[key1].id == allTimeTables[key].teacherDiscipline) {
+              //return allTimeTables[key];
+              let currDiscIdName =
+                allTDisc[key1].id + "-" + allTDisc[key1].discipline.name;
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.form.discipline = currDiscIdName;
+              return currDiscIdName;
+            }
+          }
+        }
+      }
+      return "NaN";
+    },
+    getCurrDt() {
       console.log("СЧИТАЕМ ДАТУ");
+      let currDt = new Date();
+      let currDtStr =
+        currDt.getFullYear() +
+        "-" +
+        (currDt.getMonth() < 10 ? "0" + currDt.getMonth() : currDt.getMonth()) +
+        "-" +
+        (currDt.getDate() < 10 ? "0" + currDt.getDate() : currDt.getDate());
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+      this.form.dateTime = currDtStr;
+      return currDtStr;
+    },
+    getCurrWeekType() {
+      console.log("СЧИТАЕМ Тип недели");
       let currDt = new Date();
       // проверено ниже - работает норм
       //currDt.setDate(currDt.getDate() - 3);
@@ -233,6 +312,10 @@ export default {
   },
   props: {
     username: String,
+  },
+  created() {
+    this.fetchAllTimeTables();
+    this.fetchAllTeacherDisciplines();
   },
 };
 </script>
