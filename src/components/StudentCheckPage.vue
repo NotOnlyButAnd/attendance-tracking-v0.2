@@ -1,9 +1,12 @@
 <template>
-  <section class="ui two column centered grid">
+  <section
+    v-if="isAvailablePage && username[0] == 's'"
+    class="ui two column centered grid"
+  >
     <!-- <div>
       <h1>Страница для авторизации студента на паре</h1>
     </div> -->
-    <h1>Отметка о посещении занятия</h1>
+    <h1>Отметка о посещении занятия {{ username }}</h1>
     <h5>Дисциплина: {{ discName }}</h5>
     <h5>Дата: {{ getNormDt($route.params.dt) }}</h5>
     <h5>Номер пары: {{ $route.params.classOrderID }}</h5>
@@ -17,12 +20,18 @@
       <h1>Вы успешно отмечены на занятии!</h1>
     </div>
     <div>{{ getDiscInfo }}</div>
+    <div>{{ discID }}</div>
+    <div>{{ req }}</div>
+    <!-- <div>{{ getVisitsByID(username) }}</div> -->
+  </section>
+  <section v-else class="ui two column centered grid">
+    <h1>Страница недоступна!</h1>
   </section>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-//import axios from "axios";
+import axios from "axios";
 
 export default {
   data() {
@@ -30,8 +39,11 @@ export default {
       address: "",
       discName: "",
       teacher: "",
+      discID: -1,
       lat: -1,
       long: -1,
+      isAvailablePage: false,
+      req: {},
     };
   },
   computed: {
@@ -44,6 +56,11 @@ export default {
       "getClassOrderByID",
       "getClassOrderByTime",
     ]),
+    ...mapGetters("studentDisciplines", [
+      "studentDisciplines",
+      "getStudentDisciplinesByID",
+    ]),
+    ...mapGetters("visits", ["visits", "getVisitsByID"]),
     getDiscInfo() {
       let tAllTDisc = this.teacherDisciplines;
       console.log("All teacher disciplines: ", tAllTDisc);
@@ -61,6 +78,8 @@ export default {
             "." +
             tAllTDisc[key].teacher.middleName[0] +
             ".";
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.discID = tAllTDisc[key].discipline.id;
         }
       }
       return "";
@@ -93,6 +112,65 @@ export default {
           // проверяем, проходит ли геолокация в универе
           if (this.checkLocation(this.lat, this.long)) {
             console.log("All is good, you are in the university");
+            // подготавливаем данные для отправки на сервер
+            this.req["dt"] = this.$route.params.dt;
+            this.req["state"] = ".";
+            this.req["classOrder"] = this.$route.params.classOrderID;
+            this.req["teacherDiscipline"] = this.$route.params.tDiscID;
+            let allStDisc = this.studentDisciplines;
+            this.req["studentDiscipline"] = null;
+            for (let key in allStDisc) {
+              if (
+                allStDisc[key].discipline.id == this.discID &&
+                allStDisc[key].student.user.username == this.username
+              ) {
+                this.req["studentDiscipline"] = allStDisc[key].id;
+                console.log(allStDisc[key]);
+                break;
+              }
+            }
+            // получаем айди посещения, которое нужно обновить:
+            let visitID = -1;
+            let curStVisits = this.getVisitsByID(this.username);
+            for (let key in curStVisits) {
+              // console.log(
+              //   "st disc id: ",
+              //   curStVisits[key].studentDiscipline.id,
+              //   this.req["studentDiscipline"],
+              //   curStVisits[key].studentDiscipline.id ==
+              //     this.req["studentDiscipline"]
+              // );
+              // console.log(
+              //   "dt: ",
+              //   curStVisits[key].dt,
+              //   this.$route.params.dt,
+              //   curStVisits[key].dt == this.$route.params.dt
+              // );
+              // console.log(
+              //   "tch disc id: ",
+              //   curStVisits[key].teacherDiscipline,
+              //   this.$route.params.tDiscID,
+              //   curStVisits[key].teacherDiscipline == this.$route.params.tDiscID
+              // );
+              // console.log(
+              //   "class: ",
+              //   curStVisits[key].classOrder,
+              //   this.req["classOrder"],
+              //   curStVisits[key].classOrder == this.req["classOrder"]
+              // );
+              if (
+                curStVisits[key].studentDiscipline.id ==
+                  this.req["studentDiscipline"] &&
+                curStVisits[key].dt == this.$route.params.dt &&
+                curStVisits[key].teacherDiscipline ==
+                  this.$route.params.tDiscID &&
+                curStVisits[key].classOrder == this.req["classOrder"]
+              ) {
+                visitID = curStVisits[key].id;
+                console.log("Choosen visit: ", curStVisits[key]);
+              }
+            }
+            this.sendPatchStudentVisit(visitID);
           } else {
             alert("Судя по геолокации, вы не в университете!");
           }
@@ -110,11 +188,11 @@ export default {
       // координаты универа +- погрешность (ЛевВер, ПравВер, ПравНиж, ЛевНиж)
       let yp = [45.02092, 45.020541, 45.019009, 45.01972];
       let xp = [39.029596, 39.033078, 39.032609, 39.029143];
-      let y = curr_lat;
-      let x = curr_lon;
+      //let y = curr_lat;
+      //let x = curr_lon;
       // на этих норм работает:
-      //let y = 45.020456;
-      //let x = 39.030705;
+      let y = 45.020456;
+      let x = 39.030705;
       let npol = yp.length;
       let c = false;
       let j = npol - 1;
@@ -131,6 +209,29 @@ export default {
       console.log("IS in university? -> ", c);
       return c;
     },
+    sendPatchStudentVisit(visID) {
+      console.log(visID);
+      return new Promise((resolve, reject) => {
+        axios({
+          url: process.env.VUE_APP_MY_API_URL + "visits/update/" + visID,
+          data: this.req,
+          method: "PATCH",
+        })
+          .then((response) => {
+            //console.log("RESPONSE (sendPatchVisit):", response);
+            //console.log("visits: ", this.visits);
+            resolve(response);
+          })
+          .catch((err) => {
+            //console.log("ERR (sendPatchVisit):", err);
+            reject(err);
+          });
+      });
+      //return null;
+    },
+    checkPageAvailability() {
+      this.isAvailablePage = true;
+    },
   },
   beforeRouteUpdate(to, from, next) {
     // обрабатываем изменение параметров маршрута...
@@ -140,7 +241,11 @@ export default {
     next();
   },
   created() {
+    this.checkPageAvailability();
     this.fetchAllTeacherDisciplines();
+  },
+  props: {
+    username: String,
   },
 };
 </script>

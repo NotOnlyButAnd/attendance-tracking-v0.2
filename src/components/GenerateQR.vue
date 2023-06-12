@@ -190,6 +190,8 @@ export default {
       encStr += this.getCurrClassOrder.id;
       console.log("FINISH STR: ", encStr);
       this.sendPostQR('{"message": "' + encStr + '"}');
+      // отправляем данные на сервер по посещению: всем н-ки ставим
+      // отправляем данные в табличку, сколько действует текущий QR код
       this.isShowQR = true;
     },
     sendPostQR(reqData) {
@@ -278,10 +280,16 @@ export default {
     getCurrDt() {
       console.log("СЧИТАЕМ ДАТУ");
       let currDt = new Date();
+      // console.log("dt: ", currDt);
+      // console.log("MM: ", currDt.getMonth());
+      // currDt.setMonth(6);
+      // console.log("dt new: ", currDt);
       let currDtStr =
         currDt.getFullYear() +
         "-" +
-        (currDt.getMonth() < 10 ? "0" + currDt.getMonth() : currDt.getMonth()) +
+        (currDt.getMonth() + 1 < 10
+          ? "0" + (currDt.getMonth() + 1)
+          : currDt.getMonth() + 1) +
         "-" +
         (currDt.getDate() < 10 ? "0" + currDt.getDate() : currDt.getDate());
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
