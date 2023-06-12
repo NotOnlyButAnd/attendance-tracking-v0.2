@@ -177,7 +177,19 @@ export default {
     onSubmit(event) {
       event.preventDefault();
       alert(JSON.stringify(this.form));
-      this.sendPostQR('{"message": "HELLO/KUBSU/IM/QR/CODE"}');
+      // получаем айпи адрес странички куда будем создавать код
+      //let tmpURL = process.env.VUE_APP_BASE_URL;
+      let encStr = process.env.VUE_APP_BASE_URL + "check/";
+      // получаем айди учительской дисциплины
+      let tDisc = this.getCurrDiscipline.match(/[0-9]*-/)[0];
+      //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
+      encStr += tDisc.slice(0, tDisc.length - 1) + "/";
+      // засовываем дату в английском формате туда
+      encStr += this.form.dateTime + "/";
+      // засовываем порядковый номер пары туда
+      encStr += this.getCurrClassOrder.id;
+      console.log("FINISH STR: ", encStr);
+      this.sendPostQR('{"message": "' + encStr + '"}');
       this.isShowQR = true;
     },
     sendPostQR(reqData) {

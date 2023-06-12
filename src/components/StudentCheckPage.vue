@@ -3,23 +3,10 @@
     <!-- <div>
       <h1>Страница для авторизации студента на паре</h1>
     </div> -->
-    <!-- <div class="column">
-      <form class="ui segment large form">
-        <div class="field">
-          <div class="ui right icon input large">
-            <input
-              type="text"
-              placeholder="Enter your address"
-              v-model="address"
-              ref="autocomplete"
-            />
-            <b-button @click="locatorButtonPressed"
-              >Получить координаты</b-button
-            >
-          </div>
-        </div>
-      </form>
-    </div> -->
+    <b-button @click="locatorButtonPressed">Получить координаты</b-button>
+    <h1>TeacherDisciplineID: {{ $route.params.tDiscID }}</h1>
+    <h1>Date: {{ $route.params.dt }}</h1>
+    <h1>ClassOrderID: {{ $route.params.classOrderID }}</h1>
     <div>
       <h1>Вы успешно отмечены на занятии!</h1>
     </div>
@@ -45,6 +32,13 @@ export default {
         }
       );
     },
+  },
+  beforeRouteUpdate(to, from, next) {
+    // обрабатываем изменение параметров маршрута...
+    console.log("TO: ", to);
+    console.log("FROM: ", from);
+    // не забываем вызвать next()
+    next();
   },
 };
 </script>
