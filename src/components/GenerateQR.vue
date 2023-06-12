@@ -181,7 +181,7 @@ export default {
       //let tmpURL = process.env.VUE_APP_BASE_URL;
       let encStr = process.env.VUE_APP_BASE_URL + "check/";
       // получаем айди учительской дисциплины
-      let tDisc = this.getCurrDiscipline.match(/[0-9]*-/)[0];
+      let tDisc = this.form.discipline.match(/[0-9]*-/)[0];
       //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
       encStr += tDisc.slice(0, tDisc.length - 1) + "/";
       // засовываем дату в английском формате туда
