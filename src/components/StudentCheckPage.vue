@@ -22,10 +22,12 @@
     <div>{{ getDiscInfo }}</div>
     <div>{{ discID }}</div>
     <div>{{ req }}</div>
+    <!-- <div>{{ checkPageAvailability }}</div> -->
     <!-- <div>{{ getVisitsByID(username) }}</div> -->
   </section>
   <section v-else class="ui two column centered grid">
     <h1>Страница недоступна!</h1>
+    <div>{{ checkPageAvailability }}</div>
   </section>
 </template>
 
@@ -60,6 +62,7 @@ export default {
       "studentDisciplines",
       "getStudentDisciplinesByID",
     ]),
+    ...mapGetters("validateQR", ["validateQRs"]),
     ...mapGetters("visits", ["visits", "getVisitsByID"]),
     getDiscInfo() {
       let tAllTDisc = this.teacherDisciplines;
@@ -84,9 +87,29 @@ export default {
       }
       return "";
     },
+    checkPageAvailability() {
+      let tValQRsInfo = this.validateQRs;
+      console.log("Validates info: ", tValQRsInfo);
+      for (let key in tValQRsInfo) {
+        if (this.$route.params.uuid == tValQRsInfo[key].qrUUID) {
+          console.log("YAY!!!: ", tValQRsInfo[key]);
+          let dtTimeParsed = Date.parse(tValQRsInfo[key].dtTimeEnd);
+          console.log("dt time from server: ", dtTimeParsed);
+          let tDt = new Date();
+          console.log("curr dt time: ", tDt.getTime());
+          if (tDt.getTime() <= dtTimeParsed) {
+            console.log("YAhoooo!!!: ", tDt.getTime());
+            // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+            this.isAvailablePage = true;
+          }
+        }
+      }
+      return "";
+    },
   },
   methods: {
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
+    ...mapActions("validateQR", ["fetchAllValidateQRs"]),
     getNormDt(dt) {
       return (
         dt[8] +
@@ -229,9 +252,6 @@ export default {
       });
       //return null;
     },
-    checkPageAvailability() {
-      this.isAvailablePage = true;
-    },
   },
   beforeRouteUpdate(to, from, next) {
     // обрабатываем изменение параметров маршрута...
@@ -241,8 +261,9 @@ export default {
     next();
   },
   created() {
-    this.checkPageAvailability();
     this.fetchAllTeacherDisciplines();
+    this.fetchAllValidateQRs();
+    //this.checkPageAvailability();
   },
   props: {
     username: String,

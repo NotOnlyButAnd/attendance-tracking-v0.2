@@ -9,6 +9,7 @@ import visits from "./modules/visits";
 import weekTypes from "./modules/weekTypes";
 import classOrders from "./modules/classOrders";
 import timeTables from "./modules/timeTables";
+import validateQR from "./modules/validateQR";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -115,5 +116,6 @@ export default new Vuex.Store({
     weekTypes,
     classOrders,
     timeTables,
+    validateQR,
   },
 });

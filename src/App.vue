@@ -59,6 +59,7 @@ export default {
     this.fetchAllVisits();
     this.fetchAllWeekTypes();
     this.fetchAllClassOrders();
+    this.fetchAllValidateQRs();
   },
   methods: {
     //...mapActions("movies", ["fetchMovies"]),
@@ -69,6 +70,7 @@ export default {
     ...mapActions("visits", ["fetchAllVisits"]),
     ...mapActions("weekTypes", ["fetchAllWeekTypes"]),
     ...mapActions("classOrders", ["fetchAllClassOrders"]),
+    ...mapActions("validateQR", ["fetchAllValidateQRs"]),
     logout: function () {
       this.$store.dispatch("logout").then(() => {
         this.$router.push("/signin");

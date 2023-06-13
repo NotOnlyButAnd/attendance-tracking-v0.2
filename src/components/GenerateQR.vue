@@ -124,6 +124,7 @@
       <div v-if="isShowQR">
         <b-img :src="logo1" fluid alt=" "></b-img>
       </div>
+      <div>{{ myuuid }}</div>
       <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
       </b-card>
@@ -148,6 +149,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "GenerateQR",
@@ -169,6 +171,7 @@ export default {
       dtTimeEnd: new Date(),
       logo1: NaN,
       isShowQR: false,
+      myuuid: uuidv4(),
     };
   },
   methods: {
@@ -179,7 +182,7 @@ export default {
       alert(JSON.stringify(this.form));
       // получаем айпи адрес странички куда будем создавать код
       //let tmpURL = process.env.VUE_APP_BASE_URL;
-      let encStr = process.env.VUE_APP_BASE_URL + "check/";
+      let encStr = process.env.VUE_APP_BASE_URL + "check/" + this.myuuid + "/";
       // получаем айди учительской дисциплины
       let tDisc = this.form.discipline.match(/[0-9]*-/)[0];
       //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
@@ -187,11 +190,18 @@ export default {
       // засовываем дату в английском формате туда
       encStr += this.form.dateTime + "/";
       // засовываем порядковый номер пары туда
-      encStr += this.getCurrClassOrder.id;
+      encStr += this.form.classNum;
       console.log("FINISH STR: ", encStr);
       this.sendPostQR('{"message": "' + encStr + '"}');
       // отправляем данные на сервер по посещению: всем н-ки ставим
+      this.sendPostAllStuds();
       // отправляем данные в табличку, сколько действует текущий QR код
+      let tDate = new Date(Date.now() + 5 * 60 * 1000); // добавляем 5 минут
+      let tReqVal = {};
+      tReqVal["qrUUID"] = this.myuuid;
+      tReqVal["dtTimeEnd"] = tDate.toISOString();
+      console.log("req data (validate): ", tReqVal);
+      this.sendPostValidateQr(tReqVal);
       this.isShowQR = true;
     },
     sendPostQR(reqData) {
@@ -216,6 +226,30 @@ export default {
             reject(err);
           });
       });
+    },
+    sendPostValidateQr(reqData) {
+      return new Promise((resolve, reject) => {
+        axios({
+          url: process.env.VUE_APP_MY_API_URL + "validate-qr/new/",
+          data: reqData,
+          method: "POST",
+        })
+          .then((response) => {
+            // console.log("!!!ЧЕ-то получили из generate-qr!!!");
+            // console.log("RESPONSE (sendPostQR):", response);
+            // const urlCreator = window.URL || window.webkitURL;
+            // this.logo1 = urlCreator.createObjectURL(response.data);
+            //console.log("visits: ", this.visits);
+            resolve(response);
+          })
+          .catch((err) => {
+            //console.log("ERR (sendPatchVisit):", err);
+            reject(err);
+          });
+      });
+    },
+    sendPostAllStuds() {
+      return null;
     },
     onReset(event) {
       event.preventDefault();
