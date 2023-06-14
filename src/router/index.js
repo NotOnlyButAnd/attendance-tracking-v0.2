@@ -53,7 +53,7 @@ const router = new Router({
       component: GenerateQR,
     },
     {
-      path: "/check/:uuid/:tDiscID/:dt/:classOrderID",
+      path: "/check/:uuid/:tDiscID/:grp/:dt/:classOrderID",
       name: "student_check",
       component: StudentCheckPage,
     },

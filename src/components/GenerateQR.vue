@@ -33,6 +33,20 @@
 
         <b-form-group
           class="GenerateQRPage"
+          id="input-group-2-1"
+          label="Группа:"
+          label-for="input-2-1"
+        >
+          <b-form-input
+            id="input-2-1"
+            v-model="form.grp"
+            placeholder="Введите номер группы"
+            required
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group
+          class="GenerateQRPage"
           id="input-group-3"
           label="Номер пары:"
           label-for="input-3"
@@ -158,6 +172,7 @@ export default {
       form: {
         discipline: "",
         teacher: this.username || "",
+        grp: "",
         classNum: null,
         dtTimeBegin: "",
         dtTimeEnd: "",
@@ -187,6 +202,8 @@ export default {
       let tDisc = this.form.discipline.match(/[0-9]*-/)[0];
       //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
       encStr += tDisc.slice(0, tDisc.length - 1) + "/";
+      // инфа о группе
+      encStr += this.form.grp + "/";
       // засовываем дату в английском формате туда
       encStr += this.form.dateTime + "/";
       // засовываем порядковый номер пары туда
@@ -296,6 +313,8 @@ export default {
           allTimeTables[key].weekType == this.getWeekTypeByDT(currDt)
         ) {
           console.log(allTimeTables[key]);
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.form.grp = allTimeTables[key].group;
           let allTDisc = this.getTeacherDisciplinesByID(this.username);
           for (let key1 in allTDisc) {
             if (allTDisc[key1].id == allTimeTables[key].teacherDiscipline) {

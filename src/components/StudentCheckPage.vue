@@ -1,6 +1,6 @@
 <template>
   <section
-    v-if="isAvailablePage && username[0] == 's'"
+    v-if="isAvailablePage && username[0] == 's' && isFromGrp()"
     class="ui two column centered grid"
   >
     <!-- <div>
@@ -53,6 +53,7 @@ export default {
       "teacherDisciplines",
       "getTeacherDisciplinesByID",
     ]),
+    ...mapGetters("students", ["getStudentByID"]),
     ...mapGetters("classOrders", [
       "classOrders",
       "getClassOrderByID",
@@ -110,6 +111,10 @@ export default {
   methods: {
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
     ...mapActions("validateQR", ["fetchAllValidateQRs"]),
+    isFromGrp() {
+      let tStud = this.getStudentByID(this.username);
+      return tStud.group == this.$route.params.grp;
+    },
     getNormDt(dt) {
       return (
         dt[8] +
