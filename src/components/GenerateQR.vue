@@ -179,6 +179,8 @@ export default {
         dateTime: "",
       },
       classNums: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      gTeachDisc: "-1",
+      discID: -1,
       show: true,
       classNumber: 2,
       currDateTime: new Date(),
@@ -200,8 +202,12 @@ export default {
       let encStr = process.env.VUE_APP_BASE_URL + "check/" + this.myuuid + "/";
       // получаем айди учительской дисциплины
       let tDisc = this.form.discipline.match(/[0-9]*-/)[0];
+      console.log("tdisc1: ", tDisc);
+      tDisc = tDisc[0].slice(0, tDisc.length - 1);
+      console.log("tdisc2: ", tDisc);
+      //this.gTeachDisc = tDisc;
       //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
-      encStr += tDisc.slice(0, tDisc.length - 1) + "/";
+      encStr += tDisc + "/";
       // инфа о группе
       encStr += this.form.grp + "/";
       // засовываем дату в английском формате туда
@@ -265,7 +271,59 @@ export default {
           });
       });
     },
+    sendPostCreateN(reqData) {
+      console.log("send... reqData: ", reqData);
+      return new Promise((resolve, reject) => {
+        axios({
+          url: process.env.VUE_APP_MY_API_URL + "visits/new/",
+          data: reqData,
+          method: "POST",
+        })
+          .then((response) => {
+            // console.log("!!!ЧЕ-то получили из generate-qr!!!");
+            // console.log("RESPONSE (sendPostQR):", response);
+            // const urlCreator = window.URL || window.webkitURL;
+            // this.logo1 = urlCreator.createObjectURL(response.data);
+            //console.log("visits: ", this.visits);
+            resolve(response);
+          })
+          .catch((err) => {
+            //console.log("ERR (sendPatchVisit):", err);
+            reject(err);
+          });
+      });
+    },
     sendPostAllStuds() {
+      // получаем всех студентов по группе выбранной
+      let tStudsAll = this.studentsSt;
+      let currGrpStuds = [];
+      console.log("ВСЕ СТУДЕНТЫ: ", tStudsAll);
+      for (let key in tStudsAll) {
+        if (tStudsAll[key].group == this.form.grp) {
+          currGrpStuds.push(tStudsAll[key]);
+        }
+      }
+      console.log("СТУДЕНТЫ текущей группы: ", currGrpStuds);
+      // отправляем запросы на создание новой записи о посещении для всех студентов группы (с н-кой)
+      for (let i = 0; i < currGrpStuds.length; i++) {
+        let tReqObj = {};
+        tReqObj["dt"] = this.form.dateTime;
+        tReqObj["state"] = "н";
+        // получаем дисциплины студента текущего
+        let currStDiscs = this.getStudentDisciplinesByID(
+          currGrpStuds[i].user.username
+        );
+        tReqObj["studentDiscipline"] = -1;
+        for (let key1 in currStDiscs) {
+          if (currStDiscs[key1].discipline.id == this.discID) {
+            tReqObj["studentDiscipline"] = currStDiscs[key1].id;
+            break;
+          }
+        }
+        tReqObj["teacherDiscipline"] = this.gTeachDisc;
+        tReqObj["classOrder"] = this.form.classNum;
+        this.sendPostCreateN(tReqObj);
+      }
       return null;
     },
     onReset(event) {
@@ -288,6 +346,11 @@ export default {
       "teacherDisciplines",
       "getTeacherDisciplinesByID",
     ]),
+    ...mapGetters("studentDisciplines", [
+      "studentDisciplines",
+      "getStudentDisciplinesByID",
+    ]),
+    ...mapGetters("students", ["studentsSt"]),
     ...mapGetters("weekTypes", [
       "weekTypes",
       "getWeekTypeByID",
@@ -323,6 +386,10 @@ export default {
                 allTDisc[key1].id + "-" + allTDisc[key1].discipline.name;
               // eslint-disable-next-line vue/no-side-effects-in-computed-properties
               this.form.discipline = currDiscIdName;
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.discID = allTDisc[key1].discipline.id;
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.gTeachDisc = allTDisc[key1].id;
               return currDiscIdName;
             }
           }
