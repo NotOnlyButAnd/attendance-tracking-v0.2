@@ -128,7 +128,11 @@
           ></b-form-datepicker>
         </b-form-group>
 
-        <b-button class="GenerateQRPage" type="submit" variant="primary"
+        <b-button
+          :disabled="isDisabled"
+          class="GenerateQRPage"
+          type="submit"
+          variant="primary"
           >Сгенерировать</b-button
         >
         <!-- <b-button class="GenerateQRPage" type="reset" variant="danger"
@@ -178,6 +182,7 @@ export default {
         dtTimeEnd: "",
         dateTime: "",
       },
+      isDisabled: false,
       classNums: [1, 2, 3, 4, 5, 6, 7, 8, 9],
       gTeachDisc: "-1",
       discID: -1,
@@ -195,6 +200,8 @@ export default {
     ...mapActions("timeTables", ["fetchAllTimeTables"]),
     ...mapActions("teacherDisciplines", ["fetchAllTeacherDisciplines"]),
     onSubmit(event) {
+      // отключаем кнопку чтобы еще раз никто не захотел тыкнуть, пока так
+      this.isDisabled = true;
       event.preventDefault();
       alert(JSON.stringify(this.form));
       // получаем айпи адрес странички куда будем создавать код
