@@ -6,22 +6,24 @@
     <!-- <div>
       <h1>Страница для авторизации студента на паре</h1>
     </div> -->
-    <h1>Отметка о посещении занятия {{ username }}</h1>
-    <h5>Дисциплина: {{ discName }}</h5>
-    <h5>Дата: {{ getNormDt($route.params.dt) }}</h5>
-    <h5>Номер пары: {{ $route.params.classOrderID }}</h5>
-    <h5>Преподаватель: {{ teacher }}</h5>
-    <h5>lat: {{ lat }}; long: {{ long }}</h5>
-    <b-button @click="locatorButtonPressed">Получить координаты</b-button>
-    <h1>TeacherDisciplineID: {{ $route.params.tDiscID }}</h1>
+    <div v-if="!isSuccessCheck">
+      <h1>Отметка о посещении занятия</h1>
+      <h5>Дисциплина: {{ discName }}</h5>
+      <h5>Дата: {{ getNormDt($route.params.dt) }}</h5>
+      <h5>Номер пары: {{ $route.params.classOrderID }}</h5>
+      <h5>Преподаватель: {{ teacher }}</h5>
+      <!-- <h5>lat: {{ lat }}; long: {{ long }}</h5> -->
+      <b-button @click="locatorButtonPressed">Отправить данные</b-button>
+    </div>
+    <!-- <h1>TeacherDisciplineID: {{ $route.params.tDiscID }}</h1>
     <h1>Date: {{ $route.params.dt }}</h1>
-    <h1>ClassOrderID: {{ $route.params.classOrderID }}</h1>
-    <div>
+    <h1>ClassOrderID: {{ $route.params.classOrderID }}</h1> -->
+    <div v-if="isSuccessCheck">
       <h1>Вы успешно отмечены на занятии!</h1>
     </div>
     <div>{{ getDiscInfo }}</div>
-    <div>{{ discID }}</div>
-    <div>{{ req }}</div>
+    <!-- <div>{{ discID }}</div>
+    <div>{{ req }}</div> -->
     <!-- <div>{{ checkPageAvailability }}</div> -->
     <!-- <div>{{ getVisitsByID(username) }}</div> -->
   </section>
@@ -45,6 +47,7 @@ export default {
       lat: -1,
       long: -1,
       isAvailablePage: false,
+      isSuccessCheck: false,
       req: {},
     };
   },
@@ -161,31 +164,6 @@ export default {
             let visitID = -1;
             let curStVisits = this.getVisitsByID(this.username);
             for (let key in curStVisits) {
-              // console.log(
-              //   "st disc id: ",
-              //   curStVisits[key].studentDiscipline.id,
-              //   this.req["studentDiscipline"],
-              //   curStVisits[key].studentDiscipline.id ==
-              //     this.req["studentDiscipline"]
-              // );
-              // console.log(
-              //   "dt: ",
-              //   curStVisits[key].dt,
-              //   this.$route.params.dt,
-              //   curStVisits[key].dt == this.$route.params.dt
-              // );
-              // console.log(
-              //   "tch disc id: ",
-              //   curStVisits[key].teacherDiscipline,
-              //   this.$route.params.tDiscID,
-              //   curStVisits[key].teacherDiscipline == this.$route.params.tDiscID
-              // );
-              // console.log(
-              //   "class: ",
-              //   curStVisits[key].classOrder,
-              //   this.req["classOrder"],
-              //   curStVisits[key].classOrder == this.req["classOrder"]
-              // );
               if (
                 curStVisits[key].studentDiscipline.id ==
                   this.req["studentDiscipline"] &&
@@ -196,6 +174,7 @@ export default {
               ) {
                 visitID = curStVisits[key].id;
                 console.log("Choosen visit: ", curStVisits[key]);
+                break;
               }
             }
             this.sendPatchStudentVisit(visitID);
@@ -248,6 +227,7 @@ export default {
           .then((response) => {
             //console.log("RESPONSE (sendPatchVisit):", response);
             //console.log("visits: ", this.visits);
+            this.isSuccessCheck = true;
             resolve(response);
           })
           .catch((err) => {

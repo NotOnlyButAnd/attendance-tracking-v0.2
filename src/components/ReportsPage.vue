@@ -403,7 +403,7 @@ export default {
           sortable: false,
         });
       }
-      console.log("Get fields...");
+      // console.log("Get fields...");
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.fields = currFields;
       return currFields;
@@ -460,7 +460,7 @@ export default {
           indx++;
         }
       }
-      console.log("Get items...");
+      // console.log("Get items...");
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.items = currItems;
       this.addIsEditableToItems();
@@ -496,7 +496,7 @@ export default {
   methods: {
     ...mapActions("visits", ["fetchAllVisits"]),
     discardChangesHandler() {
-      console.log("Отмена...");
+      // console.log("Отмена...");
       // достаем данные из бэкапа, или делаем запрос опять на выгрузку обычную
       this.items = Array.from(this.itemsBackup);
       this.fields = Array.from(this.fieldsBackup);
@@ -589,16 +589,16 @@ export default {
       });
     },
     editAllCellHandler() {
-      console.log("CLICKED ON edit button.. Before: ", this.isEditG);
+      // console.log("CLICKED ON edit button.. Before: ", this.isEditG);
       // кладем бэкапы массивов
       this.itemsBackup = Array.from(this.items);
       this.fieldsBackup = Array.from(this.fields);
       this.isEditG = !this.isEditG;
-      console.log("After: ", this.isEditG);
+      // console.log("After: ", this.isEditG);
     },
     // DEPRECATED
     editCellHandler(data, name) {
-      console.log("CLOCKED ON ", name);
+      // console.log("CLOCKED ON ", name);
       this.items = this.items.map((item) => ({ ...item, isEdit: false }));
       this.items[data.index].isEdit = true;
       this.selectedCell = name;
@@ -618,15 +618,15 @@ export default {
         "."
       );
     },
-    onDisciplineClick(disc_name, disc_id, e) {
-      console.log("clicked on:", disc_name, "id:", disc_id, "\nEvent:", e);
+    onDisciplineClick(disc_name, disc_id) {
+      //console.log("clicked on:", disc_name, "id:", disc_id, "\nEvent:", e);
       localStorage.setItem("currDiscName", disc_name);
       localStorage.setItem("currDiscID", disc_id);
       this.currDisciplineID = disc_id;
       this.currDisciplineName = disc_name;
     },
-    onGroupClick(g_name, e) {
-      console.log("clicked on:", g_name, "\nEvent:", e);
+    onGroupClick(g_name) {
+      //console.log("clicked on:", g_name, "\nEvent:", e);
       localStorage.setItem("currGrpName", g_name);
       this.currGrpName = g_name;
     },

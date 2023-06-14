@@ -142,14 +142,14 @@
       <div v-if="isShowQR">
         <b-img :src="logo1" fluid alt=" "></b-img>
       </div>
-      <div>{{ myuuid }}</div>
-      <b-card class="mt-3" header="Form Data Result">
+      <!-- <div>{{ myuuid }}</div> -->
+      <!-- <b-card class="mt-3" header="Form Data Result">
         <pre class="m-0">{{ form }}</pre>
-      </b-card>
-      <div>weekType: {{ getCurrWeekType }}</div>
-      <div>classOrder: {{ getCurrClassOrder }}</div>
-      <div>currDt: {{ getCurrDt }}</div>
-      <div>currDisc: {{ getCurrDiscipline }}</div>
+      </b-card> -->
+      <!-- <div>weekType: {{ getCurrWeekType }}</div> -->
+      <div>{{ getCurrClassOrder }}</div>
+      <div>{{ getCurrDt }}</div>
+      <div>{{ getCurrDiscipline }}</div>
       <!-- <div>{{ getTeacherDisciplinesByID(username) }}</div> -->
     </div>
     <!-- Проверка: время текущее между временами начала и конца или нет? -->
@@ -203,15 +203,15 @@ export default {
       // отключаем кнопку чтобы еще раз никто не захотел тыкнуть, пока так
       this.isDisabled = true;
       event.preventDefault();
-      alert(JSON.stringify(this.form));
+      //alert(JSON.stringify(this.form));
       // получаем айпи адрес странички куда будем создавать код
       //let tmpURL = process.env.VUE_APP_BASE_URL;
       let encStr = process.env.VUE_APP_BASE_URL + "check/" + this.myuuid + "/";
       // получаем айди учительской дисциплины
       let tDisc = this.form.discipline.match(/[0-9]*-/)[0];
-      console.log("tdisc1: ", tDisc);
+      //console.log("tdisc1: ", tDisc);
       tDisc = tDisc[0].slice(0, tDisc.length - 1);
-      console.log("tdisc2: ", tDisc);
+      //console.log("tdisc2: ", tDisc);
       //this.gTeachDisc = tDisc;
       //console.log("FROM TDISC: ", tDisc.slice(0, tDisc.length - 1));
       encStr += tDisc + "/";
@@ -221,7 +221,7 @@ export default {
       encStr += this.form.dateTime + "/";
       // засовываем порядковый номер пары туда
       encStr += this.form.classNum;
-      console.log("FINISH STR: ", encStr);
+      //console.log("FINISH STR: ", encStr);
       this.sendPostQR('{"message": "' + encStr + '"}');
       // отправляем данные на сервер по посещению: всем н-ки ставим
       this.sendPostAllStuds();
@@ -230,7 +230,7 @@ export default {
       let tReqVal = {};
       tReqVal["qrUUID"] = this.myuuid;
       tReqVal["dtTimeEnd"] = tDate.toISOString();
-      console.log("req data (validate): ", tReqVal);
+      //console.log("req data (validate): ", tReqVal);
       this.sendPostValidateQr(tReqVal);
       this.isShowQR = true;
     },
@@ -244,8 +244,8 @@ export default {
           responseType: "blob",
         })
           .then((response) => {
-            console.log("!!!ЧЕ-то получили из generate-qr!!!");
-            console.log("RESPONSE (sendPostQR):", response);
+            //console.log("!!!ЧЕ-то получили из generate-qr!!!");
+            //console.log("RESPONSE (sendPostQR):", response);
             const urlCreator = window.URL || window.webkitURL;
             this.logo1 = urlCreator.createObjectURL(response.data);
             //console.log("visits: ", this.visits);
@@ -279,7 +279,7 @@ export default {
       });
     },
     sendPostCreateN(reqData) {
-      console.log("send... reqData: ", reqData);
+      //console.log("send... reqData: ", reqData);
       return new Promise((resolve, reject) => {
         axios({
           url: process.env.VUE_APP_MY_API_URL + "visits/new/",
@@ -304,13 +304,13 @@ export default {
       // получаем всех студентов по группе выбранной
       let tStudsAll = this.studentsSt;
       let currGrpStuds = [];
-      console.log("ВСЕ СТУДЕНТЫ: ", tStudsAll);
+      //console.log("ВСЕ СТУДЕНТЫ: ", tStudsAll);
       for (let key in tStudsAll) {
         if (tStudsAll[key].group == this.form.grp) {
           currGrpStuds.push(tStudsAll[key]);
         }
       }
-      console.log("СТУДЕНТЫ текущей группы: ", currGrpStuds);
+      //console.log("СТУДЕНТЫ текущей группы: ", currGrpStuds);
       // отправляем запросы на создание новой записи о посещении для всех студентов группы (с н-кой)
       for (let i = 0; i < currGrpStuds.length; i++) {
         let tReqObj = {};
@@ -370,7 +370,7 @@ export default {
     ]),
     ...mapGetters("timeTables", ["timeTables", "gettimeTableByID"]),
     getCurrDiscipline() {
-      console.log("Считаем пару текущую");
+      //console.log("Считаем пару текущую");
       let currDt = new Date();
       let allTimeTables = this.timeTables;
       //console.log("DAY: ", currDt.getDay());
@@ -382,7 +382,7 @@ export default {
           allTimeTables[key].weekDay == currDt.getDay() &&
           allTimeTables[key].weekType == this.getWeekTypeByDT(currDt)
         ) {
-          console.log(allTimeTables[key]);
+          //console.log(allTimeTables[key]);
           // eslint-disable-next-line vue/no-side-effects-in-computed-properties
           this.form.grp = allTimeTables[key].group;
           let allTDisc = this.getTeacherDisciplinesByID(this.username);
@@ -397,15 +397,15 @@ export default {
               this.discID = allTDisc[key1].discipline.id;
               // eslint-disable-next-line vue/no-side-effects-in-computed-properties
               this.gTeachDisc = allTDisc[key1].id;
-              return currDiscIdName;
+              //return currDiscIdName;
             }
           }
         }
       }
-      return "NaN";
+      return "";
     },
     getCurrDt() {
-      console.log("СЧИТАЕМ ДАТУ");
+      //console.log("СЧИТАЕМ ДАТУ");
       let currDt = new Date();
       // console.log("dt: ", currDt);
       // console.log("MM: ", currDt.getMonth());
@@ -421,17 +421,18 @@ export default {
         (currDt.getDate() < 10 ? "0" + currDt.getDate() : currDt.getDate());
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.form.dateTime = currDtStr;
-      return currDtStr;
+      //return currDtStr;
+      return "";
     },
     getCurrWeekType() {
-      console.log("СЧИТАЕМ Тип недели");
+      //console.log("СЧИТАЕМ Тип недели");
       let currDt = new Date();
       // проверено ниже - работает норм
       //currDt.setDate(currDt.getDate() - 3);
       return this.getWeekTypeByDT(currDt);
     },
     getCurrClassOrder() {
-      console.log("СЧИТАЕМ НОМЕР ПАРЫ");
+      //console.log("СЧИТАЕМ НОМЕР ПАРЫ");
       let currDt = new Date();
       // проверено ниже - работает норм
       //currDt.setHours(10, 57, 0);
@@ -441,19 +442,20 @@ export default {
       this.form.dtTimeBegin = this.getClassOrderByTime(currDt).timeBegin;
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.form.dtTimeEnd = this.getClassOrderByTime(currDt).timeEnd;
-      return this.getClassOrderByTime(currDt);
+      //return this.getClassOrderByTime(currDt);
+      return "";
     },
     // getNormDtTime(timeStr) {
     //   return timeStr;
     // },
     setTimeStart() {
       this.dtTimeBegin.setHours(9, 30, 0);
-      console.log(this.dtTimeBegin);
+      // console.log(this.dtTimeBegin);
       return this.dtTimeBegin;
     },
     setTimeEnd() {
       this.dtTimeEnd.setHours(10, 50, 0);
-      console.log(this.dtTimeEnd);
+      // console.log(this.dtTimeEnd);
       return this.dtTimeEnd;
     },
   },

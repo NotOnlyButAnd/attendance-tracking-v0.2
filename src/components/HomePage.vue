@@ -100,7 +100,7 @@ export default {
       "getTeacherDisciplinesByID",
     ]),
     getUsername() {
-      console.log("HP:", this.$store.state.username || localStorage.username);
+      // console.log("HP:", this.$store.state.username || localStorage.username);
       // костыльно, но если есть возможность - разберись с computed
       return this.$store.state.username || localStorage.username;
     },
@@ -117,7 +117,7 @@ export default {
         // );
         tmpTeacherDiscIDs.push(tmpTeacherDisc[key].discipline.id);
       }
-      console.log("Curr teacher disciplines ids:", tmpTeacherDiscIDs);
+      // console.log("Curr teacher disciplines ids:", tmpTeacherDiscIDs);
       let tmpGroupsNamesByDiscs = [];
       // ВОЗМОЖНО СЛОМАЕТСЯ, СЛЕДИ ЗА ГРУППАМИ
       for (let key in this.studentDisciplines) {
